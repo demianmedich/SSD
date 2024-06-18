@@ -26,8 +26,6 @@ class VirtualSSD(SSDInterface):
     def read(self):
         """TODO: Please implement me"""
 
-    def write(self):
-        """TODO: Please implement me"""
-
-
-ssd = VirtualSSD(Path.cwd())
+    def write(self, addr, data):
+        with open(self._nand_file, "r+") as f:
+            f.write(f"{addr:02}\t0x{data:08x}\n")
