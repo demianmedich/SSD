@@ -5,7 +5,7 @@ from pathlib import Path
 
 from ssd.core.impl import VirtualSSD
 
-DEFAULT_VALUE = "0x00000000"
+DEFAULT_BYTES = 0x00000000.to_bytes()
 
 
 class VirtualSSDTestCase(unittest.TestCase):
@@ -14,7 +14,7 @@ class VirtualSSDTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             ssd.set_rootdir(Path(tmpdir))
             ssd.read(addr)
-            data = ssd.result_file.read_text().strip()
+            data = ssd.result_file.read_bytes()
         return data
 
     def test_read_nand_not_exists(self):
@@ -23,18 +23,18 @@ class VirtualSSDTestCase(unittest.TestCase):
             ssd.set_rootdir(Path(tmpdir))
             ssd.result_file.unlink(missing_ok=True)
 
-        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 0))
+        self.assertEqual(DEFAULT_BYTES, self.read_data_from_temp_file(ssd, 0))
 
     def test_read_return_default_value_not_in_valid_range(self):
         ssd = VirtualSSD()
 
-        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, -1))
-        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 100))
+        self.assertEqual(DEFAULT_BYTES, self.read_data_from_temp_file(ssd, -1))
+        self.assertEqual(DEFAULT_BYTES, self.read_data_from_temp_file(ssd, 100))
 
     def test_read_from_nand_init(self):
         ssd = VirtualSSD()
 
-        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 0))
+        self.assertEqual(DEFAULT_BYTES, self.read_data_from_temp_file(ssd, 0))
 
     def test_ssd_write(self):
         addr = 3
