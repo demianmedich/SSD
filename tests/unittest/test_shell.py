@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import Mock
+from io import StringIO
+from unittest.mock import Mock, patch
 
 from src.ssd.shell import Shell
 
@@ -35,9 +36,30 @@ class ShellTestCase(unittest.TestCase):
         self.sut.fullread()
         self.assertEqual(self.mk.fetch_read_result.call_count, 100)
 
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_read_invalid_address(self, mk_stdout):
+        invalid_address = 100
 
-def test_shell_exit(self):
-    pass
+        self.sut.read(invalid_address)
+
+        self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
+
+    def test_read_unwritten_lba(self):
+        unwritten_value = "0x00000000"
+        self.mk.fetch_read_result.return_value = unwritten_value
+
+        self.assertEqual(unwritten_value, self.sut.read(ADDRESS))
+
+    def test_read_written_lba(self):
+        self.mk.fetch_read_result.return_value = VALUE
+
+        self.assertEqual(VALUE, self.sut.read(ADDRESS))
+
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_help(self, mk_stdout):
+        self.sut.help()
+
+        self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
 
 
 if __name__ == "__main__":
