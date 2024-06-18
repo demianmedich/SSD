@@ -16,10 +16,13 @@ class TestSsdShell(unittest.TestCase):
         self.shell.read(self.target_address)
         self.ssd.read.assert_called()
 
-    def test_read_invalid_address(self):
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_read_invalid_address(self, mk_stdout):
         invalid_address = 100
-        with self.assertRaises(ValueError):
-            self.shell.read(invalid_address)
+
+        self.shell.read(invalid_address)
+
+        self.assertEqual(self.shell.HELP_MESSAGE, mk_stdout.getvalue().strip())
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_read_unwritten_lba(self, mk_stdout):
