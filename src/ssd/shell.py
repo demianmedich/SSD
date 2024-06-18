@@ -12,19 +12,23 @@ class IVirtualSsd(ABC):
         raise NotImplementedError
 
 
-class ReadCacheAccessor:
-    pass
+class ReadResultAccessor:
+    def fetch_read_result(self):
+        return "0x00000000"  # TODO: read real file
 
 
 class SsdShell:
-    def __init__(self, ssd_accessor: IVirtualSsd):
+    def __init__(
+        self, ssd_accessor: IVirtualSsd, read_res_accessor: ReadResultAccessor
+    ):
         self.ssd_accessor = ssd_accessor
-        self.read_cache_accessor = ReadCacheAccessor()
+        self.read_result_accessor = read_res_accessor
 
     def read(self, address: int):
         if not self._is_valid_address(address):
             raise ValueError  # TODO: 에러? or 출력?
-        print(self.ssd_accessor.read(address))  # TODO: 출력 Format 맞추기
+        self.ssd_accessor.read(address)
+        print(self.read_result_accessor.fetch_read_result())  # TODO: 출력 Format 맞추기
 
     @staticmethod
     def _is_valid_address(address):

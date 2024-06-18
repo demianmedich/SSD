@@ -8,7 +8,8 @@ from src.ssd.shell import SsdShell
 class TestSsdShell(unittest.TestCase):
     def setUp(self):
         self.ssd = Mock()
-        self.shell = SsdShell(ssd_accessor=self.ssd)
+        self.read_res = Mock()
+        self.shell = SsdShell(ssd_accessor=self.ssd, read_res_accessor=self.read_res)
         self.target_address = 3
 
     def test_read_api_called(self):
@@ -23,7 +24,7 @@ class TestSsdShell(unittest.TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_read_unwritten_lba(self, mk_stdout):
         unwritten_value = "0x00000000"
-        self.ssd.read.return_value = unwritten_value
+        self.read_res.fetch_read_result.return_value = unwritten_value
 
         self.shell.read(self.target_address)
 
@@ -32,7 +33,7 @@ class TestSsdShell(unittest.TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_read_written_lba(self, mk_stdout):
         written_value = "0x19930516"
-        self.ssd.read.return_value = written_value
+        self.read_res.fetch_read_result.return_value = written_value
 
         self.shell.read(self.target_address)
 
