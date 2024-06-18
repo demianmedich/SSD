@@ -11,6 +11,14 @@ class VirtualSSD(SSDInterface):
     def __init__(self, ssd_dir: Path):
         self._nand_file = ssd_dir / NAND_FILE
 
+        self.formatSSD()
+
+    def formatSSD(self):
+        if not self._nand_file.exists():
+            with open(self._nand_file, "w+") as f:
+                for _ in range(100):
+                    f.write(f"{_:02}\t0x{0:08x}\n")
+
     @property
     def nand_file(self) -> Path:
         return self._nand_file
@@ -20,3 +28,6 @@ class VirtualSSD(SSDInterface):
 
     def write(self):
         """TODO: Please implement me"""
+
+
+ssd = VirtualSSD(Path.cwd())
