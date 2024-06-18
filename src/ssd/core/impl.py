@@ -22,6 +22,8 @@ class VirtualSSD(SSDInterface):
         return self._result_file
 
     def read(self, lba_pos: int):
+        if 0 > lba_pos or lba_pos > 99:
+            self.result_file.write_text("0x00000000")
         self.result_file.write_text("0x00000000")
 
     def write(self, lba_pos: int, value: str):
