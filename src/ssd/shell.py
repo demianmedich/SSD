@@ -15,15 +15,21 @@ class IVirtualSsd(ABC):
 class SsdShell:
     def __init__(self, ssd_accessor: IVirtualSsd):
         self.ssd_accessor = ssd_accessor
+        self.__max_lba = 100
 
-    def read(self, lba_pos: int):
-        return self.ssd_accessor.read(lba_pos)
+    def read(self, address: int):
+        return self.ssd_accessor.read(address)
+
+    def write(self, address: int, value: int):
+        return self.ssd_accessor.write(address, value)
 
     def help(self):
         raise NotImplementedError
 
-    def full_write(self, value):
-        pass
+    def fullwrite(self, value):
+        for lba in range(self.__max_lba):
+            self.write(lba, value)
 
-    def full_read(self):
-        pass
+    def fullread(self):
+        for lba in range(self.__max_lba):
+            self.read(lba)
