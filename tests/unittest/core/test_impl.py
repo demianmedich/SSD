@@ -25,16 +25,16 @@ class VirtualSSDTestCase(unittest.TestCase):
 
         self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 0))
 
-    def test_read_init(self):
-        ssd = VirtualSSD()
-
-        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 0))
-
     def test_read_return_default_value_not_in_valid_range(self):
         ssd = VirtualSSD()
 
         self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, -1))
         self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 100))
+
+    def test_read_from_nand_init(self):
+        ssd = VirtualSSD()
+
+        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 0))
 
     def test_write(self):
         self.assertEqual(True, True)
