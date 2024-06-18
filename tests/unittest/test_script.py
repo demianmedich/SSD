@@ -31,10 +31,12 @@ class TestScriptTestCase(unittest.TestCase):
                 self.shell.write(lba, "0xAAAABBBB")
         for lba in range(6):
             self.shell.write(lba, "0x12345678")
+        self.assertEqual(self.shell.write.call_count, 186)
 
         self.shell.read.return_value = "0x12345678"
         for lba in range(6):
             self.assertEqual(self.shell.read(lba), "0x12345678")
+        self.assertEqual(self.shell.read.call_count, 6)
 
 
 if __name__ == "__main__":
