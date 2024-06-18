@@ -69,7 +69,7 @@ class Shell:
         os.system("exit")
 
     def help(self):
-        pass
+        print(self.HELP_MESSAGE)
 
     def fullwrite(self, value):
         for lba in range(self.__max_lba):
