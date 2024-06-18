@@ -18,9 +18,9 @@ def main():
     cmd, addr, data = get_args()
     ssd = VirtualSSD(Path.cwd())
 
-    if cmd == "R":
+    if cmd == "R" or cmd == "r":
         ssd.read(addr)
-    if cmd == "W":
+    if cmd == "W" or cmd == "w":
         ssd.write(addr, data)
     return
 
