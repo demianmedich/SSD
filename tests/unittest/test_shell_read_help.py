@@ -2,13 +2,13 @@ import unittest
 from io import StringIO
 from unittest.mock import Mock, patch
 
-from src.ssd.shell import SsdShell
+from src.ssd.shell import Shell
 
 
 class TestSsdShell(unittest.TestCase):
     def setUp(self):
         self.read_res = Mock()
-        self.shell = SsdShell(read_res_accessor=self.read_res)
+        self.shell = Shell(read_result_accessor=self.read_res)
         self.target_address = 3
 
     @patch("sys.stdout", new_callable=StringIO)
