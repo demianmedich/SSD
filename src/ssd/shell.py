@@ -17,7 +17,7 @@ class SsdShell:
         self.ssd_accessor = ssd_accessor
 
     def read(self, lba_pos: int):
-        return "0xFFFFFFFF"
+        return self.ssd_accessor.read(lba_pos)
 
     def help(self):
         raise NotImplementedError
