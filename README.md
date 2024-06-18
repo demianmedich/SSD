@@ -1,6 +1,6 @@
-# PythonProjectTemplate
+# SSD Project
 
-초기 파이썬 프로젝트의 구조를 빠르게 설정하기 위해 만든 파이썬 템플릿 저장소입니다. 
+CRA 과정 Final project
 
 ## How to use
 ### 1. venv setup
