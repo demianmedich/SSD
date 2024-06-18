@@ -17,7 +17,7 @@ class Shell:
         self.ssd_accessor = ssd_accessor
 
     def write(self, address: int, value: str):
-        pass
+        self.ssd_accessor.write(address, value)
 
     def read(self, lba_pos: int):
         pass
