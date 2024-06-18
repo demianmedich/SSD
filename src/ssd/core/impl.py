@@ -46,7 +46,7 @@ class VirtualSSD(SSDInterface):
 
         self.result_file.write_text("0x00000000")
 
-    def write(self, addr: int, value: str):
+    def write(self, addr: int, data: str):
         with open(self._nand_file, "r+") as f:
             f.seek((len(f.readline()) + 1) * addr)
             f.write(f"{addr:02}\t0x{data:08x}\n")
