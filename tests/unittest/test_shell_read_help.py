@@ -1,13 +1,16 @@
 import unittest
 from unittest.mock import Mock
 
-from src.ssd.core import SsdShell
+from src.ssd.shell import SsdShell
 
 
 class TestSsdShell(unittest.TestCase):
     def setUp(self):
-        self.mk = Mock()
-        self.sut = SsdShell(self.mk)
+        self.ssd = Mock()
+        self.shell = SsdShell(ssd_accessor=self.ssd)
+
+    def test_read_api_called(self):
+        pass
 
     def test_read_invalid_address(self):
         pass
