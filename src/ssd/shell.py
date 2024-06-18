@@ -23,7 +23,8 @@ class Shell:
         pass
 
     def exit(self):
-        pass
+        self.ssd_accessor = None
+        return
 
     def help(self):
         pass

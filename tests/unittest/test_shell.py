@@ -16,6 +16,9 @@ class ShellTestCase(unittest.TestCase):
         self.sut.write(ADDRESS, VALUE)
         self.mk.write.assert_called_once()
 
+    def test_shell_exit(self):
+        self.assertIsNone(self.sut.exit())
+
 
 def test_shell_exit(self):
     pass
