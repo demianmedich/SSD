@@ -8,9 +8,11 @@ class TestSsdShell(unittest.TestCase):
     def setUp(self):
         self.ssd = Mock()
         self.shell = SsdShell(ssd_accessor=self.ssd)
+        self.target_address = 3
 
     def test_read_api_called(self):
-        pass
+        self.shell.read(self.target_address)
+        self.ssd.read.assert_called()
 
     def test_read_invalid_address(self):
         pass

@@ -21,8 +21,8 @@ class SsdShell:
         self.ssd_accessor = ssd_accessor
         self.read_cache_accessor = ReadCacheAccessor()
 
-    def read(self):
-        raise NotImplementedError
+    def read(self, address: int):
+        self.ssd_accessor.read(address)
 
     def help(self):
         raise NotImplementedError
