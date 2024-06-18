@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import Mock
+from io import StringIO
+from unittest.mock import Mock, patch
 
 from src.ssd.shell import SsdShell
 
@@ -19,8 +20,14 @@ class TestSsdShell(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.shell.read(invalid_address)
 
-    def test_read_unwritten_lba(self):
-        pass
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_read_unwritten_lba(self, mk_stdout):
+        unwritten_value = "0x00000000"
+        self.ssd.read.return_value = unwritten_value
+
+        self.shell.read(self.target_address)
+
+        self.assertEqual(unwritten_value, mk_stdout.getvalue().strip())
 
     def test_read_written_lba(self):
         pass

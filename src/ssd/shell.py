@@ -24,7 +24,7 @@ class SsdShell:
     def read(self, address: int):
         if not self._is_valid_address(address):
             raise ValueError  # TODO: 에러? or 출력?
-        self.ssd_accessor.read(address)
+        print(self.ssd_accessor.read(address))
 
     @staticmethod
     def _is_valid_address(address):
