@@ -3,7 +3,7 @@ from pathlib import Path
 
 from src.ssd.core.base import SSDInterface
 
-DEFAULT_BYTES = 0x00000000.to_bytes()
+DEFAULT_VALUE = 0x00000000
 
 RESULT_FILE = "result.txt"
 NAND_FILE = "nand.txt"
@@ -40,19 +40,23 @@ class VirtualSSD(SSDInterface):
 
     def read(self, addr: int):
         if not self.nand_file.exists():
-            self.result_file.write_bytes(DEFAULT_BYTES)
+            self.result_file.write_text(f"0x{DEFAULT_VALUE}")
             return
 
         if 0 > addr or addr > 99:
-            self.result_file.write_bytes(DEFAULT_BYTES)
+            self.result_file.write_text(f"0x{DEFAULT_VALUE}")
             return
 
-        self.result_file.write_bytes(DEFAULT_BYTES)
+        with open(self.nand_file) as f:
+            f.seek((len(f.readline())) * addr)
+            data = f.readline().split()[-1].strip()
+
+        self.result_file.write_text(data)
 
     def write(self, addr: int, data: int):
         if not self.nand_file.exists():
             self.make_initial_nand()
 
         with open(self.nand_file, "r+") as f:
-            f.seek((len(f.readline()) + 1) * addr)
+            seek_pos = f.seek((len(f.readline())) + 1 * addr)
             f.write(f"{addr:02}\t0x{data:08x}\n")
