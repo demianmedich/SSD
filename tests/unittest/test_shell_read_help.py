@@ -29,8 +29,14 @@ class TestSsdShell(unittest.TestCase):
 
         self.assertEqual(unwritten_value, mk_stdout.getvalue().strip())
 
-    def test_read_written_lba(self):
-        pass
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_read_written_lba(self, mk_stdout):
+        written_value = "0x19930516"
+        self.ssd.read.return_value = written_value
+
+        self.shell.read(self.target_address)
+
+        self.assertEqual(written_value, mk_stdout.getvalue().strip())
 
     def test_help(self):
         pass
