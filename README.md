@@ -24,5 +24,13 @@ zsh 사용자의 경우 `.[dev]`를 `".[dev]"`로 수정
 ```bash
 $ pre-commit run --all-files  # 문제없이 실행되는지 확인
 $ pre-commit install  # pre-commit 단계 hook 설치 (black, isort)
-$ pre-commit -t pre-push  # pre-push 단계 hook 설치 (black, isort, pytest)
+$ pre-commit install -t pre-push  # pre-push 단계 hook 설치 (black, isort, pytest)
 ```
+
+## Coding Convention
+### PEP8 사용
+- 해당 프로젝트에서는 가장 common하게 사용되는 PEP8을 코딩 스타일로 사용합니다.
+- 코딩 스타일을 적용하기 위해 pre-commit, black, isort를 사용합니다.
+- 커밋을 할 때마다 black, isort가 자동적으로 실행됩니다. 코딩 스타일이 맞지 않다면 자동적으로 해당 툴이 포매팅을 맞춰줍니다. 이 때는 새로 stage 단계로 올리고 다시 커밋을 해주셔야 합니다.
+- push 할 때는 tests/unittest 아래에 있는 것들도 같이 수행됩니다.
+- 

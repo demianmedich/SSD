@@ -6,7 +6,6 @@ version = "0.0.1"
 dev = [
     "black",
     "isort",
-    "pytest",
     "coverage",
     "pre-commit",
 ]

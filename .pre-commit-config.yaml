@@ -14,9 +14,9 @@ repos:
         args: ["--profile", "black"]
         types: [python]
 
-      - id: pytest
-        name: pytest
-        entry: pytest
+      - id: unittest
+        name: unittest
+        entry: unittest
         language: system
         args: ["tests/unittest"]
         types: [python]
