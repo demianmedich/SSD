@@ -1,6 +1,5 @@
 # coding=utf-8
 import os
-from abc import ABC, abstractmethod
 from pathlib import Path
 
 
@@ -15,7 +14,7 @@ class ReadResultAccessor:
         return ret
 
 
-class SsdShell:
+class Shell:
     HELP_MESSAGE = (
         f"SSD Shell Commands:\n"
         f"write: Write value (0xXXXXXXXX) to address (0~99)\n"
@@ -32,37 +31,8 @@ class SsdShell:
         f"\tfullread"
     )
 
-    def __init__(self, read_res_accessor: ReadResultAccessor):
-        self.read_result_accessor = read_res_accessor
-
-    def read(self, address: int) -> str:
-        if not self._is_valid_address(address):
-            self.help()
-            return ""
-        # os.system(f"core.py read {address}")  # TODO: core 구현 완료 후 활성화
-        print(self.read_result_accessor.fetch_read_result())  # TODO: 출력 Format 맞추기
-
-    @staticmethod
-    def _is_valid_address(address):
-        return 0 <= address <= 99
-
-    def help(self):
-        print(SsdShell.HELP_MESSAGE)
-
-
-class IVirtualSsd(ABC):
-    @abstractmethod
-    def read(self, address: int):
-        raise NotImplementedError
-
-    @abstractmethod
-    def write(self, address: int, value: str):
-        raise NotImplementedError
-
-
-class Shell:
-    def __init__(self, ssd_accessor: IVirtualSsd):
-        self.ssd_accessor = ssd_accessor
+    def __init__(self, read_result_accessor: ReadResultAccessor):
+        self.read_result_accessor = read_result_accessor
         self.__max_lba = 99
 
     def is_valid(self, address, value):
@@ -84,8 +54,16 @@ class Shell:
         cmd = f"core.py W {address} {value}"
         os.system(cmd)
 
-    def read(self, address: int):
-        pass
+    def read(self, lba_pos: int):
+        if not self._is_valid_address(lba_pos):
+            self.help()
+            return ""
+        # os.system(f"core.py read {address}")  # TODO: core 구현 완료 후 활성화
+        print(self.read_result_accessor.fetch_read_result())  # TODO: 출력 Format 맞추기
+
+    @staticmethod
+    def _is_valid_address(address):
+        return 0 <= address <= 99
 
     def exit(self):
         os.system("exit")
