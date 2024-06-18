@@ -16,7 +16,20 @@ class Shell:
     def __init__(self, ssd_accessor: IVirtualSsd):
         self.ssd_accessor = ssd_accessor
 
+    def is_valid(self, address, value):
+        if 0 > address or address > 99:
+            return False
+        for s in value[2:]:
+            if (s < "A" or "F" < s) and (s < "0" or "9" < s):
+                return False
+
+        return True
+
     def write(self, address: int, value: str):
+        if not self.is_valid(address, value):
+            self.help()
+            return
+
         self.ssd_accessor.write(address, value)
 
     def read(self, lba_pos: int):
