@@ -34,7 +34,7 @@ class Shell:
             self.help()
             return
 
-        cmd = f"ssd W {address} {value}"
+        cmd = f"core.py W {address} {value}"
         os.system(cmd)
 
     def read(self, lba_pos: int):
