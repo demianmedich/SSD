@@ -1,8 +1,7 @@
 # coding=utf-8
 import os
-
 from abc import ABC, abstractmethod
-from pathlib import Path        
+from pathlib import Path
 
 
 class ReadResultAccessor:
@@ -60,9 +59,11 @@ class IVirtualSsd(ABC):
     def write(self, address: int, value: str):
         raise NotImplementedError
 
+
 class Shell:
     def __init__(self, ssd_accessor: IVirtualSsd):
         self.ssd_accessor = ssd_accessor
+        self.__max_lba = 99
 
     def is_valid(self, address, value):
         if 0 > address or address > 99:
@@ -83,7 +84,7 @@ class Shell:
         cmd = f"core.py W {address} {value}"
         os.system(cmd)
 
-    def read(self, lba_pos: int):
+    def read(self, address: int):
         pass
 
     def exit(self):
@@ -99,4 +100,3 @@ class Shell:
     def fullread(self):
         for lba in range(self.__max_lba):
             self.read(lba)
-
