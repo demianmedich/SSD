@@ -3,6 +3,9 @@ from unittest.mock import Mock
 
 from src.ssd.shell import Shell
 
+ADDRESS = 3
+VALUE = "0xAAAABBBB"
+
 
 class ShellTestCase(unittest.TestCase):
     def setUp(self):
@@ -10,7 +13,7 @@ class ShellTestCase(unittest.TestCase):
         self.sut = Shell(self.mk)
 
     def test_shell_write_call_SSD_write(self):
-        self.sut.write(3, "0xAAAABBBB")
+        self.sut.write(ADDRESS, VALUE)
         self.mk.write.assert_called_once()
 
 
