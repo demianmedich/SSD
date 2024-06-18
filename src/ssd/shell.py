@@ -2,7 +2,6 @@
 import os
 from abc import ABC, abstractmethod
 
-
 class IVirtualSsd(ABC):
     @abstractmethod
     def read(self, address: int):
@@ -11,7 +10,6 @@ class IVirtualSsd(ABC):
     @abstractmethod
     def write(self, address: int, value: str):
         raise NotImplementedError
-
 
 class Shell:
     def __init__(self, ssd_accessor: IVirtualSsd):
@@ -26,7 +24,6 @@ class Shell:
         for s in value[2:]:
             if (s < "A" or "F" < s) and (s < "0" or "9" < s):
                 return False
-
         return True
 
     def write(self, address: int, value: str):
@@ -46,8 +43,10 @@ class Shell:
     def help(self):
         pass
 
-    def full_write(self, value):
-        pass
+    def fullwrite(self, value):
+        for lba in range(self.__max_lba):
+            self.write(lba, value)
 
-    def full_read(self):
-        pass
+    def fullread(self):
+        for lba in range(self.__max_lba):
+            self.read(lba)
