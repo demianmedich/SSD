@@ -20,6 +20,9 @@ class Shell:
     def is_valid(self, address, value):
         if 0 > address or address > 99:
             return False
+
+        if value[:2] != "0x":
+            return False
         for s in value[2:]:
             if (s < "A" or "F" < s) and (s < "0" or "9" < s):
                 return False
