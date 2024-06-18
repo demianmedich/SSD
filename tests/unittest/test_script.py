@@ -17,13 +17,18 @@ class TestScriptTestCase(unittest.TestCase):
         self.shell.fullread.side_effect = fullread_side_effect
 
     def test_testapp1(self):
-        self.shell.fullwrite("0x00000000")
+        test_value = "0x00000000"
+        self.shell.fullwrite(test_value)
         self.shell.fullwrite.assert_called_once()
-        self.shell.fullwrite.assert_called_once_with("0x00000000")
+        self.shell.fullwrite.assert_called_once_with(test_value)
 
         self.shell.fullread()
         self.shell.fullread.assert_called_once()
         self.assertEqual(self.shell.read.call_count, 100)
+
+        self.shell.fullread.side_effect = [test_value] * 100
+        for i in range(100):
+            self.assertEqual(self.shell.fullread(), test_value)
 
     def test_testapp2(self):
         for _ in range(30):
