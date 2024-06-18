@@ -78,5 +78,7 @@ class Shell:
             self.write(lba, value)
 
     def fullread(self):
+        result = []
         for lba in range(0, self.__max_lba + 1):
-            self.read(lba)
+            result.append(self.read(lba))
+        return result

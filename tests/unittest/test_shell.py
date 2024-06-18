@@ -36,6 +36,11 @@ class ShellTestCase(unittest.TestCase):
         self.sut.fullread()
         self.assertEqual(self.mk.fetch_read_result.call_count, 100)
 
+    def test_full_read_multy(self):
+        self.sut.fullread()
+        self.sut.fullread()
+        self.assertEqual(self.mk.fetch_read_result.call_count, 200)
+
     @patch("sys.stdout", new_callable=StringIO)
     def test_read_invalid_address(self, mk_stdout):
         invalid_address = 100
