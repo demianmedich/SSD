@@ -1,9 +1,13 @@
 import unittest
 
 
-class SSDShellTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, True)  # add assertion here
+class ShellTestCase(unittest.TestCase):
+
+    def test_shell_write_call_SSD_write(self):
+        pass
+
+    def test_shell_exit(self):
+        pass
 
 
 if __name__ == "__main__":
