@@ -1,5 +1,5 @@
 [project]
-name = "myproject"
+name = "ssd"
 version = "0.0.1"
 
 [project.optional-dependencies]
