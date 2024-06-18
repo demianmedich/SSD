@@ -54,12 +54,14 @@ class Shell:
         cmd = f"core.py W {address} {value}"
         os.system(cmd)
 
-    def read(self, lba_pos: int):
-        if not self._is_valid_address(lba_pos):
+    def read(self, address: int) -> str:
+        if not self._is_valid_address(address):
             self.help()
             return ""
         # os.system(f"core.py read {address}")  # TODO: core 구현 완료 후 활성화
-        print(self.read_result_accessor.fetch_read_result())  # TODO: 출력 Format 맞추기
+        read_result = self.read_result_accessor.fetch_read_result()
+        print(read_result)  # TODO: 출력 Format 맞추기
+        return read_result
 
     @staticmethod
     def _is_valid_address(address):
@@ -72,9 +74,9 @@ class Shell:
         print(self.HELP_MESSAGE)
 
     def fullwrite(self, value):
-        for lba in range(self.__max_lba):
+        for lba in range(0, self.__max_lba + 1):
             self.write(lba, value)
 
     def fullread(self):
-        for lba in range(self.__max_lba):
+        for lba in range(0, self.__max_lba + 1):
             self.read(lba)
