@@ -15,7 +15,9 @@ class TestSsdShell(unittest.TestCase):
         self.ssd.read.assert_called()
 
     def test_read_invalid_address(self):
-        pass
+        invalid_address = 100
+        with self.assertRaises(ValueError):
+            self.shell.read(invalid_address)
 
     def test_read_unwritten_lba(self):
         pass

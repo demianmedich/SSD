@@ -22,7 +22,13 @@ class SsdShell:
         self.read_cache_accessor = ReadCacheAccessor()
 
     def read(self, address: int):
+        if not self._is_valid_address(address):
+            raise ValueError  # TODO: 에러? or 출력?
         self.ssd_accessor.read(address)
+
+    @staticmethod
+    def _is_valid_address(address):
+        return 0 <= address <= 99
 
     def help(self):
         raise NotImplementedError
