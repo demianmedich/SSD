@@ -23,7 +23,7 @@ class VirtualSSD(SSDInterface):
     def nand_file(self) -> Path:
         return self._nand_file
 
-    def read(self):
+    def read(self, addr):
         """TODO: Please implement me"""
 
     def write(self, addr, data):
