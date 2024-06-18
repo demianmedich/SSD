@@ -7,9 +7,9 @@ from ssd.core.impl import VirtualSSD
 def get_args():
     cmd = sys.argv[1]
     addr = int(sys.argv[2])
-    if cmd == "R":
+    if cmd == "R" or cmd == "r":
         return cmd, addr, None
-    if cmd == "W":
+    if cmd == "W" or cmd == "w":
         data = sys.argv[3]
         return cmd, addr, data
 
