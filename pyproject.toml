@@ -1,0 +1,12 @@
+[project]
+name = "myproject"
+version = "0.0.1"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "pytest",
+    "coverage",
+    "pre-commit",
+]
