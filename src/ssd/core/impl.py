@@ -14,14 +14,15 @@ class VirtualSSD(SSDInterface):
     def __init__(self, rootdir: Path | None = None):
         if rootdir:
             self.set_rootdir(rootdir)
+            self.make_initial_nand()
 
     def set_rootdir(self, rootdir: Path):
         self._nand_file = rootdir / NAND_FILE
         self._result_file = rootdir / RESULT_FILE
 
-        self.formatSSD()
+        self.make_initial_nand()
 
-    def formatSSD(self):
+    def make_initial_nand(self):
         if not self._nand_file.exists():
             with open(self._nand_file, "w+") as f:
                 for _ in range(100):
@@ -47,6 +48,9 @@ class VirtualSSD(SSDInterface):
         self.result_file.write_text("0x00000000")
 
     def write(self, addr: int, data: str):
-        with open(self._nand_file, "r+") as f:
+        if not self.nand_file.exists():
+            self.make_initial_nand()
+
+        with open(self.nand_file, "r+") as f:
             f.seek((len(f.readline()) + 1) * addr)
             f.write(f"{addr:02}\t0x{data:08x}\n")
