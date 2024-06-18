@@ -1,5 +1,7 @@
 # coding=utf-8
+import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 
 class IVirtualSsd(ABC):
@@ -13,8 +15,14 @@ class IVirtualSsd(ABC):
 
 
 class ReadResultAccessor:
-    def fetch_read_result(self):
-        return "0x00000000"  # TODO: read real file
+    def __init__(self, dir_path: Path):
+        self.dir_path = dir_path
+        self.result_path = dir_path / "result.txt"
+
+    def fetch_read_result(self) -> str:
+        with open(self.result_path, "r", encoding="utf-8") as fp:
+            ret = fp.read()
+        return ret
 
 
 class SsdShell:
@@ -53,7 +61,3 @@ class SsdShell:
 
     def help(self):
         print(SsdShell.HELP_MESSAGE)
-
-
-ss = SsdShell(10, ReadResultAccessor())
-ss.help()
