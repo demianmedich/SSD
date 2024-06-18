@@ -1,5 +1,8 @@
 # coding=utf-8
-from pathlib import Path
+import os
+
+from abc import ABC, abstractmethod
+from pathlib import Path        
 
 
 class ReadResultAccessor:
@@ -46,3 +49,54 @@ class SsdShell:
 
     def help(self):
         print(SsdShell.HELP_MESSAGE)
+
+
+class IVirtualSsd(ABC):
+    @abstractmethod
+    def read(self, address: int):
+        raise NotImplementedError
+
+    @abstractmethod
+    def write(self, address: int, value: str):
+        raise NotImplementedError
+
+class Shell:
+    def __init__(self, ssd_accessor: IVirtualSsd):
+        self.ssd_accessor = ssd_accessor
+
+    def is_valid(self, address, value):
+        if 0 > address or address > 99:
+            return False
+
+        if value[:2] != "0x":
+            return False
+        for s in value[2:]:
+            if (s < "A" or "F" < s) and (s < "0" or "9" < s):
+                return False
+        return True
+
+    def write(self, address: int, value: str):
+        if not self.is_valid(address, value):
+            self.help()
+            return
+
+        cmd = f"core.py W {address} {value}"
+        os.system(cmd)
+
+    def read(self, lba_pos: int):
+        pass
+
+    def exit(self):
+        os.system("exit")
+
+    def help(self):
+        pass
+
+    def fullwrite(self, value):
+        for lba in range(self.__max_lba):
+            self.write(lba, value)
+
+    def fullread(self):
+        for lba in range(self.__max_lba):
+            self.read(lba)
+
