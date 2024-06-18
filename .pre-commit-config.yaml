@@ -18,7 +18,6 @@ repos:
         name: unittest
         entry: python -m unittest discover -s tests/unittest
         language: system
-#        args: ["discover", "-s", "tests/unittest"]
         types: [python]
         stages:
           - pre-push
