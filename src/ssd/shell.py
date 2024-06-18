@@ -1,17 +1,5 @@
 # coding=utf-8
-import os
-from abc import ABC, abstractmethod
 from pathlib import Path
-
-
-class IVirtualSsd(ABC):
-    @abstractmethod
-    def read(self, address: int):
-        raise NotImplementedError
-
-    @abstractmethod
-    def write(self, address: int, value: int):
-        raise NotImplementedError
 
 
 class ReadResultAccessor:
@@ -42,17 +30,14 @@ class SsdShell:
         f"\tfullread"
     )
 
-    def __init__(
-        self, ssd_accessor: IVirtualSsd, read_res_accessor: ReadResultAccessor
-    ):
-        self.ssd_accessor = ssd_accessor
+    def __init__(self, read_res_accessor: ReadResultAccessor):
         self.read_result_accessor = read_res_accessor
 
-    def read(self, address: int):
+    def read(self, address: int) -> str:
         if not self._is_valid_address(address):
             self.help()
-            return
-        self.ssd_accessor.read(address)
+            return ""
+        # os.system(f"core.py read {address}")  # TODO: core 구현 완료 후 활성화
         print(self.read_result_accessor.fetch_read_result())  # TODO: 출력 Format 맞추기
 
     @staticmethod

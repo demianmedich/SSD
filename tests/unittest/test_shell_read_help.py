@@ -7,14 +7,9 @@ from src.ssd.shell import SsdShell
 
 class TestSsdShell(unittest.TestCase):
     def setUp(self):
-        self.ssd = Mock()
         self.read_res = Mock()
-        self.shell = SsdShell(ssd_accessor=self.ssd, read_res_accessor=self.read_res)
+        self.shell = SsdShell(read_res_accessor=self.read_res)
         self.target_address = 3
-
-    def test_read_api_called(self):
-        self.shell.read(self.target_address)
-        self.ssd.read.assert_called()
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_read_invalid_address(self, mk_stdout):
