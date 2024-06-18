@@ -19,6 +19,14 @@ class VirtualSSD(SSDInterface):
         self._nand_file = rootdir / NAND_FILE
         self._result_file = rootdir / RESULT_FILE
 
+        self.formatSSD()
+
+    def formatSSD(self):
+        if not self._nand_file.exists():
+            with open(self._nand_file, "w+") as f:
+                for _ in range(100):
+                    f.write(f"{_:02}\t0x{0:08x}\n")
+
     @property
     def nand_file(self) -> Path:
         return self._nand_file
@@ -39,4 +47,6 @@ class VirtualSSD(SSDInterface):
         self.result_file.write_text("0x00000000")
 
     def write(self, addr: int, value: str):
-        """TODO: Please implement me"""
+        with open(self._nand_file, "r+") as f:
+            f.seek((len(f.readline()) + 1) * addr)
+            f.write(f"{addr:02}\t0x{data:08x}\n")

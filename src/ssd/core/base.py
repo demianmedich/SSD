@@ -5,9 +5,9 @@ from abc import ABC, abstractmethod
 class SSDInterface(ABC):
 
     @abstractmethod
-    def read(self, lba_pos: int):
+    def read(self, addr: int):
         raise NotImplementedError()
 
     @abstractmethod
-    def write(self, lba_pos: int, value: str):
+    def write(self, addr: int, data: str):
         raise NotImplementedError()
