@@ -1,18 +1,28 @@
 # coding=utf-8
-class Shell:
-    def write(self):
-        pass
+from abc import ABC, abstractmethod
 
-    def read(self):
-        pass
 
-    def exit(self):
-        pass
+class IVirtualSsd(ABC):
+    @abstractmethod
+    def read(self, address: int):
+        raise NotImplementedError
+
+    @abstractmethod
+    def write(self, address: int, value: int):
+        raise NotImplementedError
+
+
+class SsdShell:
+    def __init__(self, ssd_accessor: IVirtualSsd):
+        self.ssd_accessor = ssd_accessor
+
+    def read(self, lba_pos: int):
+        return "0xFFFFFFFF"
 
     def help(self):
-        pass
+        raise NotImplementedError
 
-    def full_write(self):
+    def full_write(self, value):
         pass
 
     def full_read(self):
