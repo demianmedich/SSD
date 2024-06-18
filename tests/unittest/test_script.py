@@ -3,24 +3,26 @@ from unittest.mock import Mock
 
 
 class TestScriptTestCase(unittest.TestCase):
-    def fullwrite_side_effect(self, value):
-        for lba in range(100):
-            self.shell.write(lba, value)
+    def setUp(self):
+        self.shell = Mock()
 
-    def fullread_side_effect(self):
-        return [self.shell.read(lba) for lba in range(100)]
+        def fullwrite_side_effect(value):
+            for lba in range(100):
+                self.shell.write(lba, value)
+
+        def fullread_side_effect():
+            return [self.shell.read(lba) for lba in range(100)]
+
+        self.shell.fullwrite.side_effect = fullwrite_side_effect
+        self.shell.fullread.side_effect = fullread_side_effect
 
     def test_testapp1(self):
         self.shell = Mock()
-        self.shell.fullwrite.side_effect = self.fullwrite_side_effect("0x00000000")
-        self.shell.fullread.side_effect = self.fullread_side_effect()
         self.shell.fullwrite("0x00000000")
         self.shell.fullread()
 
     def test_testapp2(self):
         self.shell = Mock()
-        self.shell.fullwrite.side_effect = self.fullwrite_side_effect("0x00000000")
-        self.shell.fullread.side_effect = self.fullread_side_effect()
         for _ in range(30):
             for lba in range(6):
                 self.shell.write(lba, "0xAAAABBBB")
