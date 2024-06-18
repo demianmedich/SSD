@@ -18,7 +18,21 @@ class ReadResultAccessor:
 
 
 class SsdShell:
-    HELP_MESSAGE = "help!"
+    HELP_MESSAGE = (
+        f"SSD Shell Commands:\n"
+        f"write: Write value (0xXXXXXXXX) to address (0~99)\n"
+        f"\twrite [address] [value]\n"
+        f"read: Read value of address (0~99)\n"
+        f"\tread [address]\n"
+        f"exit: Exit shell interface\n"
+        f"\texit\n"
+        f"help: Print help\n"
+        f"\thelp\n"
+        f"fullwrite: Write value (0xXXXXXXXX) to entire address\n"
+        f"\tfullwrite [value]\n"
+        f"fullread: Read value of entire address\n"
+        f"\tfullread"
+    )
 
     def __init__(
         self, ssd_accessor: IVirtualSsd, read_res_accessor: ReadResultAccessor
@@ -39,3 +53,7 @@ class SsdShell:
 
     def help(self):
         print(SsdShell.HELP_MESSAGE)
+
+
+ss = SsdShell(10, ReadResultAccessor())
+ss.help()

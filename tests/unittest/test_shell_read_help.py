@@ -42,8 +42,11 @@ class TestSsdShell(unittest.TestCase):
 
         self.assertEqual(written_value, mk_stdout.getvalue().strip())
 
-    def test_help(self):
-        pass
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_help(self, mk_stdout):
+        self.shell.help()
+
+        self.assertEqual(self.shell.HELP_MESSAGE, mk_stdout.getvalue().strip())
 
 
 if __name__ == "__main__":
