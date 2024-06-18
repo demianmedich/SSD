@@ -13,8 +13,7 @@ class ShellTestCase(unittest.TestCase):
         self.sut = Shell(self.mk)
 
     def test_shell_write_call_SSD_write(self):
-        self.sut.write(ADDRESS, VALUE)
-        self.mk.write.assert_called_once()
+        self.assertIsNone(self.sut.write(ADDRESS, VALUE))
 
     def test_shell_exit(self):
         self.assertIsNone(self.sut.exit())

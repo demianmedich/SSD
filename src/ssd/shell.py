@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 from abc import ABC, abstractmethod
 
 
@@ -30,14 +31,14 @@ class Shell:
             self.help()
             return
 
-        self.ssd_accessor.write(address, value)
+        cmd = f"ssd W {address} {value}"
+        os.system(cmd)
 
     def read(self, lba_pos: int):
         pass
 
     def exit(self):
-        self.ssd_accessor = None
-        return
+        os.system("exit")
 
     def help(self):
         pass
