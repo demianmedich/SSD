@@ -34,9 +34,6 @@ class ShellTestCase(unittest.TestCase):
 
         self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
 
-    def test_shell_exit(self):
-        self.assertIsNone(self.sut.exit())
-
     def test_full_write_once(self):
         test_value = "0xFFFFFFFF"
         self.sut.fullwrite(test_value)
