@@ -18,9 +18,17 @@ class TestSsdShell(unittest.TestCase):
         self.sut.onecmd("write 10 0xAAAABBBB")
         self.mk.write.assert_called()
 
+    def test_write_with_not_convertible_address(self):
+        self.sut.onecmd("write bug 0xAAAABBBB")
+        self.mk.help.assert_called()
+
     def test_read(self):
         self.sut.onecmd("read 10")
         self.mk.read.assert_called()
+
+    def test_read_with_not_convertible_address(self):
+        self.sut.onecmd("read bug")
+        self.mk.help.assert_called()
 
     def test_exit(self):
         self.assertTrue(self.sut.onecmd("exit"))
