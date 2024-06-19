@@ -13,11 +13,12 @@ class VirtualSSD(SSDInterface):
     _nand_file: Path
     _result_file: Path
 
-    def __init__(self, rootdir: Path | None = None):
+    def __init__(self, rootdir: str | Path | None = None):
         if rootdir:
             self.set_rootdir(rootdir)
 
-    def set_rootdir(self, rootdir: Path):
+    def set_rootdir(self, rootdir: str | Path):
+        rootdir = Path(rootdir)
         self._nand_file = rootdir / NAND_FILE
         self._result_file = rootdir / RESULT_FILE
 

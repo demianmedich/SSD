@@ -12,7 +12,7 @@ class VirtualSSDTestCase(unittest.TestCase):
 
     def read_data_from_temp_file(self, ssd: VirtualSSD, addr: int) -> int:
         with tempfile.TemporaryDirectory() as tmpdir:
-            ssd.set_rootdir(Path(tmpdir))
+            ssd.set_rootdir(tmpdir)
             ssd.read(addr)
             data = ssd.result_file.read_text()
         return int(data, 16)
@@ -26,7 +26,7 @@ class VirtualSSDTestCase(unittest.TestCase):
         ssd = VirtualSSD()
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            ssd.set_rootdir(Path(tmpdir))
+            ssd.set_rootdir(tmpdir)
 
             self.assertEqual(ssd.nand_file.exists(), True)
 
@@ -34,7 +34,7 @@ class VirtualSSDTestCase(unittest.TestCase):
         ssd = VirtualSSD()
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            ssd.set_rootdir(Path(tmpdir))
+            ssd.set_rootdir(tmpdir)
             ssd.result_file.unlink(missing_ok=True)
 
             self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, 0))
@@ -43,7 +43,7 @@ class VirtualSSDTestCase(unittest.TestCase):
         ssd = VirtualSSD()
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            ssd.set_rootdir(Path(tmpdir))
+            ssd.set_rootdir(tmpdir)
 
             self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, -1))
             self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, 100))
@@ -60,7 +60,7 @@ class VirtualSSDTestCase(unittest.TestCase):
         ssd = VirtualSSD()
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            ssd.set_rootdir(Path(tmpdir))
+            ssd.set_rootdir(tmpdir)
             ssd.write(addr, data)
             actual = self.read_data_from_nand_file(ssd, addr)
             self.assertEqual(data, actual)
@@ -69,7 +69,7 @@ class VirtualSSDTestCase(unittest.TestCase):
         ssd = VirtualSSD()
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            ssd.set_rootdir(Path(tmpdir))
+            ssd.set_rootdir(tmpdir)
 
             expected1 = 0x1A3B
             ssd.write(1, expected1)
