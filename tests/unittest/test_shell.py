@@ -68,6 +68,30 @@ class ShellTestCase(unittest.TestCase):
 
         self.assertEqual(VALUE, self.sut.read(ADDRESS))
 
+    def test_testapp1(self):
+        test_value = "0x00000000"
+        self.sut.fullwrite(test_value)
+
+        self.mk.fetch_read_result.return_value = test_value
+        result = self.sut.fullread()
+        self.assertEqual(self.mk.fetch_read_result.call_count, 100)
+        self.assertTrue(all(value == test_value for value in result))
+
+    def test_testapp2(self):
+        test_value = "0xAAAABBBB"
+        test_value_overwrite = "0x12345678"
+
+        for _ in range(30):
+            for lba in range(6):
+                self.sut.write(lba, test_value)
+        for lba in range(6):
+            self.sut.write(lba, test_value_overwrite)
+
+        self.mk.fetch_read_result.return_value = test_value_overwrite
+        for lba in range(6):
+            self.assertEqual(self.sut.read(lba), test_value_overwrite)
+        self.assertEqual(self.mk.fetch_read_result.call_count, 6)
+
     @patch("sys.stdout", new_callable=StringIO)
     def test_help(self, mk_stdout):
         self.sut.help()
