@@ -60,4 +60,4 @@ class VirtualSSD(SSDInterface):
             f.write(self.data_format(addr, data))
 
     def data_format(self, addr: int, data: int) -> str:
-        return f"{addr:02}\t0x{data:08x}\n"
+        return f"{addr:02}\t0x{data:08X}\n"

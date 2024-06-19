@@ -51,16 +51,16 @@ class Shell:
             self.help()
             return
 
-        cmd = f"core.py W {address} {value}"
+        cmd = f"python -m ssd W {address} {value}"
         os.system(cmd)
 
     def read(self, address: int) -> str:
         if not self._is_valid_address(address):
             self.help()
             return ""
-        # os.system(f"core.py read {address}")  # TODO: core 구현 완료 후 활성화
+        os.system(f"python -m ssd R {address}")
         read_result = self.read_result_accessor.fetch_read_result()
-        print(read_result)  # TODO: 출력 Format 맞추기
+        print(read_result)
         return read_result
 
     @staticmethod
