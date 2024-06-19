@@ -4,14 +4,19 @@ from pathlib import Path
 from ssd.core.impl import VirtualSSD
 
 
-def get_args():
-    cmd = sys.argv[1]
-    addr = int(sys.argv[2])
-    if cmd == "R" or cmd == "r":
-        return cmd, addr, None
-    if cmd == "W" or cmd == "w":
-        data = sys.argv[3]
-        return cmd, addr, data
+def get_args() -> (str, int, str):
+    try:
+        cmd = sys.argv[1]
+        addr = int(sys.argv[2])
+        if cmd == "R" or cmd == "r":
+            return cmd, addr, None
+        if cmd == "W" or cmd == "w":
+            data = sys.argv[3]
+            return cmd, addr, data
+    except IndexError:
+        pass
+    finally:
+        return None, None, None
 
 
 def main():
@@ -22,6 +27,11 @@ def main():
         ssd.read(addr)
     if cmd == "W" or cmd == "w":
         ssd.write(addr, data)
+    if cmd is None:
+        print("Invalid command!")
+        print("Read:  python ssd R {addr}")
+        print("Write: python ssd W {addr} {data}")
+        print("addr = [0, 99], data = 0xXXXXXXXX")
     return
 
 
