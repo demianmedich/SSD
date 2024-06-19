@@ -82,3 +82,27 @@ class Shell:
         for lba in range(0, self.__max_lba + 1):
             result.append(self.read(lba))
         return result
+
+    def testapp1(self):
+        self.fullwrite("0xAAAAAAAA")
+        data = self.fullread()
+        for i in range(len(data)):
+            if data[i] != "0xAAAAAAAA":
+                print("Fail")
+                return
+        print("Success")
+
+    def testapp2(self):
+        for _ in range(30):
+            for lba in range(6):
+                self.write(lba, "0xAAAABBBB")
+
+        for lba in range(6):
+            self.write(lba, "0x12345678")
+
+        for lba in range(6):
+            data = self.read(lba)
+            if data != "0x12345678":
+                print("Fail")
+                return
+        print("Success")
