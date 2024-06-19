@@ -54,13 +54,13 @@ class Shell:
             self.help()
             return
 
-        cmd = f"python -m ssd W {address} {value}"
-        os.system(cmd)
+        os.system(f"python -m ssd W {address} {value}")
 
     def read(self, address: int) -> str:
         if not self._is_valid_address(address):
             self.help()
             return ""
+
         os.system(f"python -m ssd R {address}")
         read_result = self.read_result_accessor.fetch_read_result()
         print(read_result)
@@ -77,12 +77,12 @@ class Shell:
         print(self.HELP_MESSAGE)
 
     def fullwrite(self, value):
-        for lba in range(0, self.__max_lba + 1):
+        for lba in range(self.__min_lba, self.__max_lba + 1):
             self.write(lba, value)
 
     def fullread(self):
         result = []
-        for lba in range(0, self.__max_lba + 1):
+        for lba in range(self.__min_lba, self.__max_lba + 1):
             result.append(self.read(lba))
         return result
 
