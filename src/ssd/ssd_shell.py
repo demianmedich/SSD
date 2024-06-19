@@ -22,8 +22,6 @@ class SsdShell(cmd.Cmd):
             self.ssd_ctrl.read(int(args[0]))
         except ValueError:
             self.ssd_ctrl.help()
-        finally:
-            return
 
     def do_write(self, args):
         try:
@@ -33,8 +31,6 @@ class SsdShell(cmd.Cmd):
             self.ssd_ctrl.write(int(args[0]), args[1])
         except ValueError:
             self.ssd_ctrl.help()
-        finally:
-            return
 
     def do_exit(self, args):
         return True
@@ -53,8 +49,6 @@ class SsdShell(cmd.Cmd):
             self.ssd_ctrl.fullwrite(args[0])
         except ValueError:
             self.ssd_ctrl.help()
-        finally:
-            return
 
     def do_testapp1(self, args):
         self.ssd_ctrl.testapp1()
