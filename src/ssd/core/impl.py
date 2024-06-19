@@ -38,11 +38,11 @@ class VirtualSSD(SSDInterface):
 
     def read(self, addr: int):
         if not self.nand_file.exists():
-            self.result_file.write_text(f"0x{DEFAULT_VALUE}")
+            self.result_file.write_text(f"0x{DEFAULT_VALUE:08X}")
             return
 
         if 0 > addr or addr > 99:
-            self.result_file.write_text(f"0x{DEFAULT_VALUE}")
+            self.result_file.write_text(f"0x{DEFAULT_VALUE:08X}")
             return
 
         with open(self.nand_file, mode="rt", encoding="utf-8", newline="\n") as f:
