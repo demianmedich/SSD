@@ -1,8 +1,10 @@
+import os
 import unittest
 from io import StringIO
+from pathlib import Path
 from unittest.mock import Mock, patch
 
-from src.ssd.shell import Shell
+from src.ssd.shell import ReadResultAccessor, Shell
 
 ADDRESS = 3
 VALUE = "0xAAAABBBB"
@@ -25,7 +27,13 @@ class ShellTestCase(unittest.TestCase):
         self.mk.fetch_read_result.return_value = test_value
         self.assertEqual(test_value, self.sut.read(address=10))
 
-    def test_full_write_multy(self):
+    def test_full_write_real(self):
+        test_value = "0xFFFFFFF"
+        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real.fullwrite(test_value)
+        self.assertEqual(test_value, real.read(address=55))
+
+    def test_full_write_multi(self):
         test_set = ["0x1111FFFF", "0x1112FFFF", "0xAAAA1234"]
         self.mk.fetch_read_result.side_effect = test_set
         for test_value in test_set:
@@ -36,7 +44,7 @@ class ShellTestCase(unittest.TestCase):
         self.sut.fullread()
         self.assertEqual(self.mk.fetch_read_result.call_count, 100)
 
-    def test_full_read_multy(self):
+    def test_full_read_multi(self):
         self.sut.fullread()
         self.sut.fullread()
         self.assertEqual(self.mk.fetch_read_result.call_count, 200)
