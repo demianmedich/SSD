@@ -40,7 +40,12 @@ class SsdShell(cmd.Cmd):
         self.ssd_ctrl.fullread()
 
     def do_fullwrite(self, args):
-        self.ssd_ctrl.fullwrite()
+        args = args.split()
+        if len(args) != 1:
+            self.ssd_ctrl.help()
+            return
+
+        self.ssd_ctrl.fullwrite(args[0])
 
     def do_testapp1(self, args):
         self.ssd_ctrl.testapp1()

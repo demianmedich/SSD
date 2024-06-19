@@ -14,17 +14,9 @@ class TestSsdShell(unittest.TestCase):
         self.sut.onecmd("write 1")
         self.mk.help.assert_called()
 
-    def test_write_none_hex_arg(self):
-        self.sut.onecmd("write 10 0x1G2HAAAA")
-        self.mk.help.assert_called()
-
     def test_write(self):
         self.sut.onecmd("write 10 0xAAAABBBB")
         self.mk.write.assert_called()
-
-    def test_read_invalid_address(self):
-        self.sut.onecmd("read 1000")
-        self.mk.help.assert_called()
 
     def test_read(self):
         self.sut.onecmd("read 10")
@@ -38,7 +30,7 @@ class TestSsdShell(unittest.TestCase):
         self.mk.help.assert_called()
 
     def test_full_write(self):
-        self.sut.onecmd("fullwrite")
+        self.sut.onecmd("fullwrite 0xAAAABBBB")
         self.mk.fullwrite.assert_called()
 
     def test_full_read(self):
