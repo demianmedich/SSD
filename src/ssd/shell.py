@@ -119,8 +119,3 @@ class Shell:
                 print("Fail")
                 return
         print("Success")
-
-
-if __name__ == "__main__":
-    shell = Shell(ReadResultAccessor(Path(os.getcwd())))
-    shell.write(0, "0x0000000")
