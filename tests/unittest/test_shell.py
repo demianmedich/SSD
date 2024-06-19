@@ -26,6 +26,14 @@ class ShellTestCase(unittest.TestCase):
 
         self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
 
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_write_invalid_hex_value(self, mk_stdout):
+        test_value = "0xCODEBLUE"
+
+        self.sut.write(ADDRESS, test_value)
+
+        self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
+
     def test_shell_exit(self):
         self.assertIsNone(self.sut.exit())
 
