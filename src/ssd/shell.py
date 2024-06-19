@@ -84,25 +84,28 @@ class Shell:
         return result
 
     def testapp1(self):
-        self.fullwrite("0xAAAAAAAA")
+        test_value = "0xAAAAAAAA"
+        self.fullwrite(test_value)
         data = self.fullread()
         for i in range(len(data)):
-            if data[i] != "0xAAAAAAAA":
+            if data[i] != test_value:
                 print("Fail")
                 return
         print("Success")
 
     def testapp2(self):
+        test_value1 = "0xAAAABBBB"
+        test_value2 = "0x12345678"
         for _ in range(30):
             for lba in range(6):
-                self.write(lba, "0xAAAABBBB")
+                self.write(lba, test_value1)
 
         for lba in range(6):
-            self.write(lba, "0x12345678")
+            self.write(lba, test_value2)
 
         for lba in range(6):
             data = self.read(lba)
-            if data != "0x12345678":
+            if data != test_value2:
                 print("Fail")
                 return
         print("Success")
