@@ -33,6 +33,12 @@ class SsdShell(cmd.Cmd):
     def do_fullwrite(self, args):
         self.ssd_ctrl.fullwrite(args)
 
+    def do_testapp1(self, args):
+        self.ssd_ctrl.testapp1()
+
+    def do_testapp2(self, args):
+        self.ssd_ctrl.testapp2()
+
     def default(self, line):
         """Handle invalid commands"""
         print("INVALID COMMAND")
