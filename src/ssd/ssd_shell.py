@@ -15,11 +15,20 @@ class SsdShell(cmd.Cmd):
         self.ssd_ctrl = ctrl
 
     def do_read(self, args):
-        self.ssd_ctrl.read(int(args))
+        args = args.split()
+        if len(args) != 1:
+            self.ssd_ctrl.help()
+            return
+
+        self.ssd_ctrl.read(int(args[0]))
 
     def do_write(self, args):
-        addr, value = args.split()
-        self.ssd_ctrl.write(int(addr), value)
+        args = args.split()
+        if len(args) != 2:
+            self.ssd_ctrl.help()
+            return
+
+        self.ssd_ctrl.write(int(args[0]), args[1])
 
     def do_exit(self, args):
         return True
@@ -31,7 +40,13 @@ class SsdShell(cmd.Cmd):
         self.ssd_ctrl.fullread()
 
     def do_fullwrite(self, args):
-        self.ssd_ctrl.fullwrite(args)
+        self.ssd_ctrl.fullwrite()
+
+    def do_testapp1(self, args):
+        self.ssd_ctrl.testapp1()
+
+    def do_testapp2(self, args):
+        self.ssd_ctrl.testapp2()
 
     def default(self, line):
         """Handle invalid commands"""
