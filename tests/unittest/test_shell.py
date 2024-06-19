@@ -21,17 +21,13 @@ class ShellTestCase(unittest.TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_write_invalid_length_value(self, mk_stdout):
         test_value = "0x1234567"
-
         self.sut.write(ADDRESS, test_value)
-
         self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_write_invalid_hex_value(self, mk_stdout):
         test_value = "0xCODEBLUE"
-
         self.sut.write(ADDRESS, test_value)
-
         self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
 
     def test_full_write_once(self):
@@ -52,6 +48,28 @@ class ShellTestCase(unittest.TestCase):
         for test_value in test_set:
             self.sut.fullwrite(test_value)
             self.assertEqual(test_value, self.sut.read(address=10))
+
+    def test_write_outofaddr(self):
+        test_lba = -1
+        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        self.assertFalse(real.write(test_lba, "0xFFFFFFFF"))
+
+    def test_write_outofvalue(self):
+        test_lba = 10
+        test_value = "FFFFF"
+        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        self.assertFalse(real.write(test_lba, test_value))
+
+    def test_write_outofvalue_second(self):
+        test_lba = 10
+        test_value = "FFFFFFFFFF"
+        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        self.assertFalse(real.write(test_lba, test_value))
+
+    def test_fullwrite_outofvalue(self):
+        test_value = "FFFFF"
+        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        self.assertFalse(real.fullwrite(test_value))
 
     def test_full_read_once(self):
         self.sut.fullread()
@@ -108,7 +126,6 @@ class ShellTestCase(unittest.TestCase):
     @patch("sys.stdout", new_callable=StringIO)
     def test_help(self, mk_stdout):
         self.sut.help()
-
         self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
 
 
