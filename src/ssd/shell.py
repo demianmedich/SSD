@@ -73,9 +73,6 @@ class Shell:
     def _is_valid_address(address):
         return 0 <= address <= 99
 
-    def exit(self):
-        os.system("exit")
-
     def help(self):
         print(self.HELP_MESSAGE)
 
