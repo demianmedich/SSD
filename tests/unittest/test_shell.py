@@ -65,7 +65,7 @@ class ShellTestCase(unittest.TestCase):
 
     def test_write_outofvalue_second(self):
         test_lba = 10
-        test_value = "FFFFFFFFFF    "
+        test_value = "FFFFFFFFFF"
         real = Shell(ReadResultAccessor(Path(os.getcwd())))
         self.assertFalse(real.write(test_lba, test_value))
 

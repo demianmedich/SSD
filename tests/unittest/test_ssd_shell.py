@@ -26,6 +26,10 @@ class TestSsdShell(unittest.TestCase):
         self.sut.onecmd("read 10")
         self.mk.read.assert_called()
 
+    def test_read_two_parameters(self):
+        self.sut.onecmd("read 10 0xFFFFFFFF")
+        self.mk.help.assert_called()
+
     def test_read_with_not_convertible_address(self):
         self.sut.onecmd("read bug")
         self.mk.help.assert_called()
@@ -40,6 +44,13 @@ class TestSsdShell(unittest.TestCase):
     def test_full_write(self):
         self.sut.onecmd("fullwrite 0xAAAABBBB")
         self.mk.fullwrite.assert_called()
+
+    def test_full_write_two_parameters(self):
+        self.sut.onecmd("fullwrite 10 0xAAAABBBB")
+        self.mk.help.assert_called()
+
+    def test_emptyline(self):
+        self.sut.onecmd(" ")
 
     def test_full_read(self):
         self.sut.onecmd("fullread")
