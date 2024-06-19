@@ -15,32 +15,26 @@ class SsdShell(cmd.Cmd):
         self.ssd_ctrl = ctrl
 
     def do_read(self, args):
-        args = args.split()
-        if len(args) != 1:
-            self.ssd_ctrl.help()
-            return
-
         try:
-            address = int(args[0])
+            args = args.split()
+            if len(args) != 1:
+                raise ValueError
+            self.ssd_ctrl.read(int(args[0]))
         except ValueError:
             self.ssd_ctrl.help()
+        finally:
             return
-
-        self.ssd_ctrl.read(address)
 
     def do_write(self, args):
-        args = args.split()
-        if len(args) != 2:
-            self.ssd_ctrl.help()
-            return
-
         try:
-            address = int(args[0])
+            args = args.split()
+            if len(args) != 2:
+                raise ValueError
+            self.ssd_ctrl.write(int(args[0]), args[1])
         except ValueError:
             self.ssd_ctrl.help()
+        finally:
             return
-
-        self.ssd_ctrl.write(address, args[1])
 
     def do_exit(self, args):
         return True
@@ -52,12 +46,15 @@ class SsdShell(cmd.Cmd):
         self.ssd_ctrl.fullread()
 
     def do_fullwrite(self, args):
-        args = args.split()
-        if len(args) != 1:
+        try:
+            args = args.split()
+            if len(args) != 1:
+                raise ValueError
+            self.ssd_ctrl.fullwrite(args[0])
+        except ValueError:
             self.ssd_ctrl.help()
+        finally:
             return
-
-        self.ssd_ctrl.fullwrite(args[0])
 
     def do_testapp1(self, args):
         self.ssd_ctrl.testapp1()
