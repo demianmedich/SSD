@@ -80,6 +80,10 @@ class Shell:
         print(self.HELP_MESSAGE)
 
     def fullwrite(self, value):
+        if not self.is_valid(self.__max_lba, value):
+            self.help()
+            return
+
         for lba in range(self.__min_lba, self.__max_lba + 1):
             self.write(lba, value)
 
