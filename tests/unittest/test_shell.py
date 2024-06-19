@@ -18,6 +18,22 @@ class ShellTestCase(unittest.TestCase):
     def test_shell_write_call_SSD_write(self):
         self.assertIsNone(self.sut.write(ADDRESS, VALUE))
 
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_write_invalid_length_value(self, mk_stdout):
+        test_value = "0x1234567"
+
+        self.sut.write(ADDRESS, test_value)
+
+        self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
+
+    @patch("sys.stdout", new_callable=StringIO)
+    def test_write_invalid_hex_value(self, mk_stdout):
+        test_value = "0xCODEBLUE"
+
+        self.sut.write(ADDRESS, test_value)
+
+        self.assertEqual(self.sut.HELP_MESSAGE, mk_stdout.getvalue().strip())
+
     def test_shell_exit(self):
         self.assertIsNone(self.sut.exit())
 
