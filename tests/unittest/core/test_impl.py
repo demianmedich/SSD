@@ -46,6 +46,8 @@ class VirtualSSDTestCase(unittest.TestCase):
         ssd = VirtualSSD()
 
         self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 0))
+        (Path.cwd() / "nand.txt").unlink(missing_ok=True)
+        (Path.cwd() / "result.txt").unlink(missing_ok=True)
 
     def test_write_to_invalid_range(self):
         addr = 3
