@@ -57,6 +57,9 @@ class SsdShell(cmd.Cmd):
         """Handle invalid commands"""
         print("INVALID COMMAND")
 
+    def emptyline(self):
+        pass
+
 
 if __name__ == "__main__":
     app = SsdShell(Shell(ReadResultAccessor(Path(os.getcwd()))))
