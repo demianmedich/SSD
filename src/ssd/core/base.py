@@ -9,5 +9,5 @@ class SSDInterface(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def write(self, addr: int, data: str):
+    def write(self, addr: int, data: int):
         raise NotImplementedError()
