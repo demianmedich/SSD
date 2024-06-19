@@ -83,8 +83,7 @@ class Shell:
             result.append(self.read(lba))
         return result
 
-    def testapp1(self):
-        test_value = "0xAAAAAAAA"
+    def testapp1(self, test_value):
         self.fullwrite(test_value)
         data = self.fullread()
         for i in range(len(data)):
@@ -93,19 +92,17 @@ class Shell:
                 return
         print("Success")
 
-    def testapp2(self):
-        test_value1 = "0xAAAABBBB"
-        test_value2 = "0x12345678"
+    def testapp2(self, test_value, test_value_overwrite):
         for _ in range(30):
             for lba in range(6):
-                self.write(lba, test_value1)
+                self.write(lba, test_value)
 
         for lba in range(6):
-            self.write(lba, test_value2)
+            self.write(lba, test_value_overwrite)
 
         for lba in range(6):
             data = self.read(lba)
-            if data != test_value2:
+            if data != test_value_overwrite:
                 print("Fail")
                 return
         print("Success")
