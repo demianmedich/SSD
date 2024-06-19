@@ -84,6 +84,28 @@ class ShellTestCase(unittest.TestCase):
 
         self.assertEqual(VALUE, self.sut.read(ADDRESS))
 
+    def test_testapp1_success(self):
+        test_value = "0xAAAAAAAA"
+        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real.testapp1()
+        self.assertEqual(test_value, real.read(address=55))
+
+    def test_testapp1_fail(self):
+        test_value = "0xFFFFFFFF"
+        self.mk.fetch_read_result.return_value = test_value
+        self.sut.testapp1()
+
+    def test_testapp2_success(self):
+        test_value = "0x12345678"
+        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real.testapp2()
+        self.assertEqual(test_value, real.read(address=0))
+
+    def test_testapp2_fail(self):
+        test_value = "0xAAAABBBB"
+        self.mk.fetch_read_result.return_value = test_value
+        self.sut.testapp2()
+
     def test_testapp1(self):
         test_value = "0x00000000"
         self.sut.fullwrite(test_value)
