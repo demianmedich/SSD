@@ -40,6 +40,9 @@ class Shell:
         if self.__min_lba > address or address > self.__max_lba:
             return False
 
+        if len(value) != 10:
+            return False
+
         if value[:2] != "0x":
             return False
 
@@ -112,3 +115,8 @@ class Shell:
                 print("Fail")
                 return
         print("Success")
+
+
+if __name__ == "__main__":
+    shell = Shell(ReadResultAccessor(Path(os.getcwd())))
+    shell.write(0, "0x0000000")
