@@ -28,7 +28,7 @@ class ShellTestCase(unittest.TestCase):
         self.assertEqual(test_value, self.sut.read(address=10))
 
     def test_full_write_real(self):
-        test_value = "0xFFFFFFF"
+        test_value = "0xFFFFFFFF"
         real = Shell(ReadResultAccessor(Path(os.getcwd())))
         real.fullwrite(test_value)
         self.assertEqual(test_value, real.read(address=55))
