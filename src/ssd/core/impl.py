@@ -26,7 +26,7 @@ class VirtualSSD(SSDInterface):
     def make_initial_nand(self):
         if not self.nand_file.exists():
             with open(self.nand_file, mode="w", encoding="utf-8", newline="\n") as f:
-                f.writelines(f"{i:02}\t0x{0:08X}\n" for i in range(100))
+                f.writelines(self.data_format(i, 0) for i in range(100))
 
     @property
     def nand_file(self) -> Path:
@@ -38,17 +38,15 @@ class VirtualSSD(SSDInterface):
 
     def read(self, addr: int):
         if not self.nand_file.exists():
-            self.result_file.write_text(f"0x{DEFAULT_VALUE}")
+            self.result_file.write_text(f"0x{DEFAULT_VALUE:08X}")
             return
 
         if 0 > addr or addr > 99:
-            self.result_file.write_text(f"0x{DEFAULT_VALUE}")
+            self.result_file.write_text(f"0x{DEFAULT_VALUE:08X}")
             return
 
         with open(self.nand_file, mode="rt", encoding="utf-8", newline="\n") as f:
-            line = f.readline()
-            len_line = len(line)
-            f.seek(len_line * addr)
+            f.seek(len(f.readline()) * addr)
             data = f.readline().split()[-1].strip()
 
         self.result_file.write_text(data)
@@ -58,7 +56,8 @@ class VirtualSSD(SSDInterface):
             self.make_initial_nand()
 
         with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
-            line = f.readline()
-            len_line = len(line)
-            f.seek(len_line * addr)
-            f.write(f"{addr:02}\t0x{data:08X}\n")
+            f.seek(len(f.readline()) * addr)
+            f.write(self.data_format(addr, data))
+
+    def data_format(self, addr: int, data: int) -> str:
+        return f"{addr:02}\t0x{data:08X}\n"
