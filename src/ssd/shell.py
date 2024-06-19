@@ -33,17 +33,20 @@ class Shell:
 
     def __init__(self, read_result_accessor: ReadResultAccessor):
         self.read_result_accessor = read_result_accessor
+        self.__min_lba = 0
         self.__max_lba = 99
 
     def is_valid(self, address, value):
-        if 0 > address or address > 99:
+        if self.__min_lba > address or address > self.__max_lba:
             return False
 
         if value[:2] != "0x":
             return False
-        for s in value[2:]:
-            if (s < "A" or "F" < s) and (s < "0" or "9" < s):
+
+        for num in value[2:]:
+            if (num < "A" or "F" < num) and (num < "0" or "9" < num):
                 return False
+
         return True
 
     def write(self, address: int, value: str):
