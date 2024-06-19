@@ -14,8 +14,6 @@ def get_args() -> (str, int, str):
             data = sys.argv[3]
             return cmd, addr, data
     except IndexError:
-        pass
-    finally:
         return None, None, None
 
 
