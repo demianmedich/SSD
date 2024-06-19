@@ -17,19 +17,28 @@ class VirtualSSDTestCase(unittest.TestCase):
             data = ssd.result_file.read_text()
         return int(data, 16)
 
+    def read_data_from_nand_file(self, ssd: VirtualSSD, addr: int) -> int:
+        ssd.read(addr)
+        data = ssd.result_file.read_text()
+        return int(data, 16)
+
     def test_read_nand_not_exists(self):
         ssd = VirtualSSD()
+
         with tempfile.TemporaryDirectory() as tmpdir:
             ssd.set_rootdir(Path(tmpdir))
             ssd.result_file.unlink(missing_ok=True)
 
-        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 0))
+            self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, 0))
 
     def test_read_return_default_value_not_in_valid_range(self):
         ssd = VirtualSSD()
 
-        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, -1))
-        self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 100))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ssd.set_rootdir(Path(tmpdir))
+
+            self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, -1))
+            self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, 100))
 
     def test_read_from_nand_init(self):
         ssd = VirtualSSD()
@@ -40,14 +49,13 @@ class VirtualSSDTestCase(unittest.TestCase):
         addr = 3
         data = 0x12345678
 
-        ssd = VirtualSSD(Path.cwd())
-        ssd.write(addr, data)
+        ssd = VirtualSSD()
 
-        with open(ssd.nand_file, "r") as f:
-            f.seek((len(f.readline()) + 1) * addr)
-            result = int(f.readline().split()[-1], 16)
-
-        self.assertEqual(data, result)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ssd.set_rootdir(Path(tmpdir))
+            ssd.write(addr, data)
+            actual = self.read_data_from_nand_file(ssd, addr)
+            self.assertEqual(data, actual)
 
     def test_is_exist_nand_txt(self):
         ssd = VirtualSSD(Path.cwd())
@@ -62,11 +70,16 @@ class VirtualSSDTestCase(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             ssd.set_rootdir(Path(tmpdir))
 
-            expected = 0x1A3B
-            ssd.write(1, expected)
-            actual = self.read_data_from_temp_file(ssd, 1)
+            expected1 = 0x1A3B
+            expected2 = 0x1111
+            ssd.write(1, expected1)
+            actual1 = self.read_data_from_nand_file(ssd, 1)
 
-        self.assertEqual(expected, actual)
+            ssd.write(2, expected2)
+            actual2 = self.read_data_from_nand_file(ssd, 2)
+
+        self.assertEqual(expected1, actual1)
+        self.assertEqual(expected2, actual2)
 
 
 if __name__ == "__main__":

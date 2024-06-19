@@ -16,7 +16,6 @@ class VirtualSSD(SSDInterface):
     def __init__(self, rootdir: Path | None = None):
         if rootdir:
             self.set_rootdir(rootdir)
-            self.make_initial_nand()
 
     def set_rootdir(self, rootdir: Path):
         self._nand_file = rootdir / NAND_FILE
@@ -25,10 +24,9 @@ class VirtualSSD(SSDInterface):
         self.make_initial_nand()
 
     def make_initial_nand(self):
-        if not self._nand_file.exists():
-            with open(self._nand_file, "w+") as f:
-                for _ in range(100):
-                    f.write(f"{_:02}\t0x{0:08x}\n")
+        if not self.nand_file.exists():
+            with open(self.nand_file, mode="w", encoding="utf-8", newline="\n") as f:
+                f.writelines(f"{i:02}\t0x{0:08x}\n" for i in range(100))
 
     @property
     def nand_file(self) -> Path:
@@ -47,8 +45,10 @@ class VirtualSSD(SSDInterface):
             self.result_file.write_text(f"0x{DEFAULT_VALUE}")
             return
 
-        with open(self.nand_file) as f:
-            f.seek((len(f.readline())) * addr)
+        with open(self.nand_file, mode="rt", encoding="utf-8", newline="\n") as f:
+            line = f.readline()
+            len_line = len(line)
+            f.seek(len_line * addr)
             data = f.readline().split()[-1].strip()
 
         self.result_file.write_text(data)
@@ -57,6 +57,8 @@ class VirtualSSD(SSDInterface):
         if not self.nand_file.exists():
             self.make_initial_nand()
 
-        with open(self.nand_file, "r+") as f:
-            seek_pos = f.seek((len(f.readline())) + 1 * addr)
+        with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
+            line = f.readline()
+            len_line = len(line)
+            f.seek(len_line * addr)
             f.write(f"{addr:02}\t0x{data:08x}\n")
