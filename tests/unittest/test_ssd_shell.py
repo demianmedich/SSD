@@ -12,13 +12,13 @@ class TestSsdShell(unittest.TestCase):
 
     def test_write_one_arg(self):
         with patch("sys.stdout", new=StringIO()) as mock_out:
-            with self.assertRaises(NotImplementedError):
-                self.sut.onecmd("write 1")
+            self.sut.onecmd("write 1")
+            self.mk.help.assert_called()
 
     def test_write_none_hex_arg(self):
         with patch("sys.stdout", new=StringIO()) as mock_out:
-            with self.assertRaises(ValueError):
-                self.sut.onecmd("write 10 0x1G2HAAAA")
+            self.sut.onecmd("write 10 0x1G2HAAAA")
+            self.mk.help.assert_called()
 
     def test_write(self):
         with patch("sys.stdout", new=StringIO()) as mock_out:
@@ -27,8 +27,8 @@ class TestSsdShell(unittest.TestCase):
 
     def test_read_invalid_address(self):
         with patch("sys.stdout", new=StringIO()) as mock_out:
-            with self.assertRaises(ValueError):
-                self.sut.onecmd("read 1000")
+            self.sut.onecmd("read 1000")
+            self.mk.help.assert_called()
 
     def test_read(self):
         with patch("sys.stdout", new=StringIO()) as mock_out:
@@ -67,5 +67,4 @@ class TestSsdShell(unittest.TestCase):
     def test_wrong_cmd(self):
         with patch("sys.stdout", new=StringIO()) as mock_out:
             self.sut.onecmd("get")
-
             self.assertEqual("INVALID COMMAND", mock_out.getvalue().strip())
