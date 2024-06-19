@@ -40,17 +40,14 @@ class Shell:
         if self.__min_lba > address or address > self.__max_lba:
             return False
 
-        if len(value) != 10:
-            return False
+        if (
+            len(value) == 10
+            and value.startswith("0x")
+            and all(c in "0123456789ABCDEF" for c in value[2:])
+        ):
+            return True
 
-        if value[:2] != "0x":
-            return False
-
-        for num in value[2:]:
-            if (num < "A" or "F" < num) and (num < "0" or "9" < num):
-                return False
-
-        return True
+        return False
 
     def write(self, address: int, value: str):
         if not self.is_valid(address, value):
