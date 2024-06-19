@@ -4,15 +4,14 @@ from pathlib import Path
 from ssd.core.impl import VirtualSSD
 
 
-def get_args() -> (str, int, str):
+def get_args() -> (str, int, int):
     try:
         cmd = sys.argv[1]
         addr = int(sys.argv[2])
         if cmd == "R" or cmd == "r":
             return cmd, addr, None
         if cmd == "W" or cmd == "w":
-            data = sys.argv[3]
-            return cmd, addr, data
+            return cmd, addr, int(sys.argv[3], 16)
     except IndexError:
         return None, None, None
 
