@@ -38,10 +38,10 @@ class VirtualSSD(SSDInterface):
 
     def print_help(self):
         print("Invalid command!")
-        print("Read:  python ssd R {addr}")
-        print("Write: python ssd W {addr} {data}")
-        print("Erase: python ssd E {addr} {size}")
-        print("Flush: python ssd F ")
+        print("Read:  python -m ssd R {addr}")
+        print("Write: python -m ssd W {addr} {data}")
+        print("Erase: python -m ssd E {addr} {size}")
+        print("Flush: python -m ssd F ")
         print("addr = [0, 99], data = 0xXXXXXXXX, size = [1, 10]")
 
     def read(self, addr: int):
