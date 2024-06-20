@@ -13,20 +13,20 @@ class CommandBuffer:
         self._buffer_txt_path = rootdir / BUFFER_TXT
         self._ssd = ssd
 
-        self._make_initial_buffer()
+        if not self._buffer_txt_path.exists():
+            self._make_initial_buffer()
 
     def flush(self) -> None:
         cmds = self._read_commands_buffer_txt()
-        for opcode, addr, value_or_cnt in cmds:
+        for opcode, addr, value_or_cnt in [_.split(" ") for _ in cmds]:
             match opcode:
                 case "W":
-                    self._ssd.write(addr, value_or_cnt)
+                    self._ssd.write(addr, data=value_or_cnt)
                 case "E":
-                    # TODO: erase 추가 필요.
-                    # self._ssd.erase(addr, value_or_cnt)
-                    pass
-                case _:
-                    raise ValueError(f"Invalid opcode {opcode}")
+                    self._ssd.erase(addr, size=value_or_cnt)
+                # case _:
+                #     raise ValueError(f"Invalid opcode {opcode}")
+        self._make_initial_buffer()
 
     def read(self, requested_address: int) -> str:
         if requested_address < 0 or requested_address >= 100:
@@ -47,28 +47,31 @@ class CommandBuffer:
         raise ValueError(f"Not found data")
 
     def write(self, cmd: str) -> None:
-        commands = self._read_commands_buffer_txt()
-        commands.append(cmd)
-        changed = self._optimize_commands(commands)
+        cmds = self._read_commands_buffer_txt()
+        cmds.append(cmd)
+        changed = self._optimize_commands(cmds)
 
         if changed:
             with open(
                 self._buffer_txt_path, mode="wt", encoding="utf-8", newline="\n"
             ) as f:
-                f.writelines(f"{cmd}\n" for cmd in commands)
+                f.writelines(f"{cmd}\n" for cmd in cmds)
         else:
             with open(
                 self._buffer_txt_path, mode="a+", encoding="utf-8", newline="\n"
             ) as f:
                 f.write(f"{cmd}\n")
 
+        if len(cmds) > 9:
+            self.flush()
+
     def _read_commands_buffer_txt(self) -> list[str]:
-        commands = self._buffer_txt_path.read_text(encoding="utf-8").split("\n")
-        return [cmd for cmd in commands if cmd]
-        # return commands
+        cmds = self._buffer_txt_path.read_text(encoding="utf-8").split("\n")
+        return [cmd for cmd in cmds if cmd]
+        # return cmds
 
     def _make_initial_buffer(self):
-        with open(self._buffer_txt_path, mode="a+", encoding="utf-8", newline="\n"):
+        with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
             pass
 
     def _optimize_commands(self, commands: list[str]) -> bool:
