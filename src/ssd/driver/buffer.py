@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ssd.core.base import SSDInterface
+from ssd.driver.base import SSDInterface
 
 NAND_FILE = "nand.txt"
 BUFFER_TXT = "buffer.txt"
@@ -21,9 +21,7 @@ class CommandBuffer:
                 case "W":
                     self._ssd.write(addr, value_or_cnt)
                 case "E":
-                    # TODO: erase 추가 필요.
-                    # self._ssd.erase(addr, value_or_cnt)
-                    pass
+                    self._ssd.erase(addr, value_or_cnt)
                 case _:
                     raise ValueError(f"Invalid opcode {opcode}")
 

@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-from ssd.core.impl import VirtualSSD
+from ssd.driver.virtual import VirtualSSD
 
 
 def get_args() -> (str, int, int):
