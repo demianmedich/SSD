@@ -28,9 +28,18 @@ class Logger:
             raise FileNotFoundError(f"Log file '{log_file_path}' not found.")
         log_file_size = os.path.getsize(log_file_path)
         log_file_size_kb = log_file_size / 1024
-        if log_file_size_kb > 2:
+        if log_file_size_kb > 1:
             return True
         return False
+
+    def check_until_log_file_existence(self, log_folder):
+        if not os.path.exists(log_folder):
+            raise FileNotFoundError(f"Log folder '{log_folder}' not found.")
+        files = os.listdir(log_folder)
+        for file in files:
+            if file.startswith("until") and file.endswith(".log"):
+                return os.path.join(log_folder, file)
+        return None
 
     def rename_latest_log(self, log_file_path):
         dir_name, old_file_name = os.path.split(log_file_path)
@@ -45,6 +54,9 @@ class Logger:
         log_folder = os.path.join(root_folder, "log")
         log_file_path = os.path.join(log_folder, "latest.log")
         if self.check_latest_log_size(log_file_path):
+            until_file_path = self.check_until_log_file_existence(log_folder)
+            if until_file_path != None:
+                print(until_file_path)
             self.rename_latest_log(log_file_path)
             print("OVER")
 
