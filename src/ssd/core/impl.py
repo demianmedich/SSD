@@ -53,8 +53,11 @@ class VirtualSSD(SSDInterface):
             f.write(self.data_format(addr, data))
 
     def erase(self, addr: int, size: int):
-        if not self.nand_file.exists():
-            self.make_initial_nand()
+        if size < 1 or size > 10:
+            print("Invalid command!")
+            print("Erase: python ssd E {addr} {size}")
+            print("addr = [0, 99], 1 <= size <= 10")
+            return
 
         with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
             for i in range(size):
@@ -64,8 +67,6 @@ class VirtualSSD(SSDInterface):
                 f.write(self.data_format(addr + i, DEFAULT_VALUE))
 
     def erase_range(self, start_addr: int, end_addr: int):
-        if not self.nand_file.exists():
-            self.make_initial_nand()
 
         with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
             for addr in range(start_addr, end_addr):

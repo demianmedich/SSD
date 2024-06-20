@@ -67,7 +67,7 @@ class Shell:
         return read_result
 
     def erase(self, address: int, size: int):
-        if not (self.__min_lba <= address <= self.__max_lba and 1 <= size <= 10):
+        if not (self.__min_lba <= address <= self.__max_lba):
             self.help()
             return
 
