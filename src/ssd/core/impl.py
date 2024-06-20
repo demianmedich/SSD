@@ -3,7 +3,7 @@ from pathlib import Path
 
 from src.ssd.core.base import SSDInterface
 
-DEFAULT_VALUE = 0xFFFFFFFFF
+DEFAULT_VALUE = 0x00000000
 
 RESULT_FILE = "result.txt"
 NAND_FILE = "nand.txt"
