@@ -7,34 +7,36 @@ TODO:
 from pathlib import Path
 
 from shell.app.util import ScriptManager
+from ssd.core.logger import Logger
 
 
 class SsdTestRunnerApp:
     def __init__(self):
         self._script_manager = ScriptManager()
+        self.logger = Logger()
 
     def execute_runlist(self, run_list_path: Path | str) -> None:
         run_list_path = Path(run_list_path).absolute()
         if not run_list_path.exists():
-            print("FileNotFoundError: Run list file does not exist")
+            self.logger.print("FileNotFoundError: Run list file does not exist")
             return
 
         script_names = self._parse_run_list(run_list_path)
 
         try:
             script_paths = self._script_manager.collect(script_names)
-            print(script_paths)
+            self.logger.print(script_paths)
         except FileNotFoundError as e:
-            print(f"FileNotFoundError: {e}")
+            self.logger.print(f"FileNotFoundError: {e}")
             return
 
         for _name, _path in zip(script_names, script_paths):
-            print(f"{_name}\t---\tRun...", end="")
+            self.logger.print(f"{_name}\t---\tRun...")
             test_result = self._script_manager.execute(_path)
             if not test_result:
-                print("FAIL!")
+                self.logger.print("FAIL!")
                 break
-            print("Pass")
+            self.logger.print("Pass")
 
     @staticmethod
     def _parse_run_list(run_list: Path) -> list[str]:
