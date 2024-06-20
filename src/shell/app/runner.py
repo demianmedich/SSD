@@ -22,10 +22,8 @@ class SsdTestRunnerApp:
         try:
             script_paths = self._collect_scripts(script_names)
             print(script_paths)
-        except FileNotFoundError:
-            print(
-                "FileNotFoundError: 존재하지 않는 시나리오가 있으니 list와 /script를 확인해 보세요"
-            )
+        except FileNotFoundError as e:
+            print(f"FileNotFoundError: {e}")
             return
 
         for _name, _path in zip(script_names, script_paths):
@@ -42,12 +40,17 @@ class SsdTestRunnerApp:
 
     def _collect_scripts(self, script_names: list[str]) -> list[Path]:
         script_paths = []
+        missing = []
 
         for name in script_names:
             script_path = self.script_dir_path / f"{name}.py"
-            if not script_path.exists():
-                raise FileNotFoundError
-            script_paths.append(script_path)
+            if script_path.exists():
+                script_paths.append(script_path)
+            else:
+                missing.append(script_path)
+
+        if missing:
+            raise FileNotFoundError(", ".join(map(str, missing)))
 
         return script_paths
 
