@@ -4,7 +4,7 @@ import tempfile
 from itertools import cycle, islice
 from unittest import TestCase
 
-from ssd.core.impl import VirtualSSD
+from ssd.driver.virtual import VirtualSSD
 
 
 class VirtualSSDTestCase(TestCase):

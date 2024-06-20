@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ssd.core.base import SSDInterface
+from ssd.driver.base import SSDInterface
 
 NAND_FILE = "nand.txt"
 BUFFER_TXT = "buffer.txt"
@@ -9,7 +9,6 @@ BUFFER_TXT = "buffer.txt"
 class CommandBuffer:
     def __init__(self, ssd: SSDInterface, rootdir: str | Path = Path.cwd()):
         rootdir = Path(rootdir)
-        self._nand_txt_path = rootdir / NAND_FILE
         self._buffer_txt_path = rootdir / BUFFER_TXT
         self._ssd = ssd
 
@@ -23,6 +22,9 @@ class CommandBuffer:
                 case "W":
                     self._ssd.write(addr, data=value_or_cnt)
                 case "E":
+                    self._ssd.erase(addr, value_or_cnt)
+                case _:
+                    raise ValueError(f"Invalid opcode {opcode}")
                     self._ssd.erase(addr, size=value_or_cnt)
                 # case _:
                 #     raise ValueError(f"Invalid opcode {opcode}")
@@ -68,7 +70,6 @@ class CommandBuffer:
     def _read_commands_buffer_txt(self) -> list[str]:
         cmds = self._buffer_txt_path.read_text(encoding="utf-8").split("\n")
         return [cmd for cmd in cmds if cmd]
-        # return cmds
 
     def _make_initial_buffer(self):
         with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):

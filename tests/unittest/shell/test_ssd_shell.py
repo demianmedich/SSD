@@ -2,7 +2,7 @@ import unittest
 from io import StringIO
 from unittest.mock import Mock, patch
 
-from src.ssd.ssd_shell import SsdShell
+from ssd.shell.ssd_shell import SsdShell
 
 
 class TestSsdShell(unittest.TestCase):
