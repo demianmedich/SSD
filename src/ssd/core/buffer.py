@@ -58,7 +58,7 @@ class CommandBuffer:
                 f.writelines(f"{cmd}\n" for cmd in commands)
         else:
             with open(
-                self._buffer_txt_path, mode="w+", encoding="utf-8", newline="\n"
+                self._buffer_txt_path, mode="a+", encoding="utf-8", newline="\n"
             ) as f:
                 f.write(f"{cmd}\n")
 
@@ -68,7 +68,7 @@ class CommandBuffer:
         # return commands
 
     def _make_initial_buffer(self):
-        with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
+        with open(self._buffer_txt_path, mode="a+", encoding="utf-8", newline="\n"):
             pass
 
     def _optimize_commands(self, commands: list[str]) -> bool:
