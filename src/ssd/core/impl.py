@@ -3,7 +3,7 @@ from pathlib import Path
 
 from src.ssd.core.base import SSDInterface
 
-DEFAULT_VALUE = 0x00000000
+DEFAULT_VALUE = 0xFFFFFFFFF
 
 RESULT_FILE = "result.txt"
 NAND_FILE = "nand.txt"
@@ -64,10 +64,7 @@ class VirtualSSD(SSDInterface):
         if not ((0 < size <= 10) and (addr + size <= 100) and (0 <= addr)):
             self.print_help()
             return
-
-        with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
-            f.seek(len(f.readline()) * addr)
-            f.writelines(self.data_format(addr + i, DEFAULT_VALUE) for i in range(size))
+        [self.write(addr + i, DEFAULT_VALUE) for i in range(size)]
 
     def erase_range(self, start_addr: int, end_addr: int):
         self.erase(start_addr, end_addr - start_addr)

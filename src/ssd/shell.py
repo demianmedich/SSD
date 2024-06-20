@@ -72,7 +72,9 @@ class Shell:
             return
 
         while size:
+            print(f"python -m ssd E {address} {min(10, size)}")
             os.system(f"python -m ssd E {address} {min(10, size)}")
+            address += min(10, size)
             size -= min(10, size)
 
     def erase_range(self, start_address: int, end_address: int):
