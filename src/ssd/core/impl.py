@@ -2,7 +2,6 @@
 from pathlib import Path
 
 from src.ssd.core.base import SSDInterface
-from ssd.__main__ import print_help
 
 DEFAULT_VALUE = 0x00000000
 
@@ -37,6 +36,14 @@ class VirtualSSD(SSDInterface):
     def result_file(self) -> Path:
         return self._result_file
 
+    def print_help(self):
+        print("Invalid command!")
+        print("Read:  python ssd R {addr}")
+        print("Write: python ssd W {addr} {data}")
+        print("Erase: python ssd E {addr} {size}")
+        print("Flush: python ssd F ")
+        print("addr = [0, 99], data = 0xXXXXXXXX, size = [1, 10]")
+
     def read(self, addr: int):
         if 0 > addr or addr > 99:
             self.result_file.write_text(f"0x{DEFAULT_VALUE:08X}")
@@ -55,7 +62,7 @@ class VirtualSSD(SSDInterface):
 
     def erase(self, addr: int, size: int):
         if not ((0 < size <= 10) and (addr + size < 100)):
-            print_help()
+            self.print_help()
             return
 
         with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:

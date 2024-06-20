@@ -33,17 +33,8 @@ def main():
     if cmd == "F":
         ssd.flush()
     if cmd is None:
-        print_help()
+        ssd.print_help()
     return
-
-
-def print_help():
-    print("Invalid command!")
-    print("Read:  python ssd R {addr}")
-    print("Write: python ssd W {addr} {data}")
-    print("Erase: python ssd E {addr} {size}")
-    print("Flush: python ssd F ")
-    print("addr = [0, 99], data = 0xXXXXXXXX, size = [1, 10]")
 
 
 if __name__ == "__main__":
