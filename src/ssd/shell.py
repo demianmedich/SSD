@@ -73,6 +73,13 @@ class Shell:
 
         os.system(f"python -m ssd E {address} {size}")
 
+    def erase_range(self, start_address: int, end_address: int):
+        if not (self.__min_lba <= start_address < end_address <= self.__max_lba + 1):
+            self.help()
+            return
+
+        os.system(f"python -m ssd E {start_address} {end_address - start_address}")
+
     @staticmethod
     def _is_valid_address(address):
         return 0 <= address <= 99
