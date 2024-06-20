@@ -53,10 +53,26 @@ class VirtualSSD(SSDInterface):
             f.write(self.data_format(addr, data))
 
     def erase(self, addr: int, size: int):
-        pass
+        if not self.nand_file.exists():
+            self.make_initial_nand()
+
+        with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
+            for i in range(size):
+                if addr + i > 99:
+                    break
+                f.seek(len(f.readline()) * (addr + i))
+                f.write(self.data_format(addr + i, DEFAULT_VALUE))
 
     def erase_range(self, start_addr: int, end_addr: int):
-        pass
+        if not self.nand_file.exists():
+            self.make_initial_nand()
+
+        with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
+            for addr in range(start_addr, end_addr):
+                if addr > 99:
+                    break
+                f.seek(len(f.readline()) * addr)
+                f.write(self.data_format(addr, DEFAULT_VALUE))
 
     def data_format(self, addr: int, data: int) -> str:
         return f"{addr:02}\t0x{data:08X}\n"
