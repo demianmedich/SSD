@@ -1,8 +1,11 @@
 import os
 from pathlib import Path
 
+from ssd.core.logger import Logger
+
 
 class ScriptManager:
+
     script_dir = Path(__file__).parent.parent.parent.joinpath("script").absolute()
 
     def find(self, script_name: str):
@@ -43,6 +46,7 @@ class ScriptManager:
 
 if __name__ == "__main__":
     # just for test
+    LOG = Logger()
     sm = ScriptManager()
-    print(sm.script_dir)
-    print(sm.script_dir.exists())
+    LOG.print(sm.script_dir)
+    LOG.print(sm.script_dir.exists())
