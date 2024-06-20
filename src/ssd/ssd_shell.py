@@ -14,6 +14,24 @@ class SsdShell(cmd.Cmd):
         super().__init__()
         self.ssd_ctrl = ctrl
 
+    def do_erase(self, args):
+        try:
+            args = args.split()
+            if len(args) != 2:
+                raise ValueError
+            self.ssd_ctrl.erase(int(args[0]), int(args[1]))
+        except ValueError:
+            self.ssd_ctrl.help()
+
+    def do_erase_range(self, args):
+        try:
+            args = args.split()
+            if len(args) != 2:
+                raise ValueError
+            self.ssd_ctrl.erase_range(int(args[0]), int(args[1]))
+        except ValueError:
+            self.ssd_ctrl.help()
+
     def do_read(self, args):
         try:
             args = args.split()
