@@ -2,6 +2,8 @@
 import os
 from pathlib import Path
 
+from ssd.core.logger import Logger
+
 
 class ReadResultAccessor:
     def __init__(self, dir_path: Path):
@@ -35,6 +37,7 @@ class Shell:
         self.read_result_accessor = read_result_accessor
         self.__min_lba = 0
         self.__max_lba = 99
+        self.logger = Logger()
 
     def is_valid(self, address, value):
         if self.__min_lba > address or address > self.__max_lba:
@@ -63,8 +66,22 @@ class Shell:
 
         os.system(f"python -m ssd R {address}")
         read_result = self.read_result_accessor.fetch_read_result()
-        print(read_result)
+        self.logger.print(read_result)
         return read_result
+
+    def erase(self, address: int, size: int):
+        if not ((0 < size) and (address + size <= 100) and (0 <= address)):
+            self.help()
+            return
+
+        while size:
+            self.logger.print(f"python -m ssd E {address} {min(10, size)}")
+            os.system(f"python -m ssd E {address} {min(10, size)}")
+            address += min(10, size)
+            size -= min(10, size)
+
+    def erase_range(self, start_address: int, end_address: int):
+        self.erase(start_address, end_address - start_address)
 
     @staticmethod
     def _is_valid_address(address):
@@ -93,9 +110,9 @@ class Shell:
         data = self.fullread()
         for i in range(len(data)):
             if data[i] != test_value:
-                print("Fail")
+                self.logger.print("Fail")
                 return
-        print("Success")
+        self.logger.print("Success")
 
     def testapp2(self):
         test_value1 = "0xAAAABBBB"
@@ -110,6 +127,6 @@ class Shell:
         for lba in range(6):
             data = self.read(lba)
             if data != test_value2:
-                print("Fail")
+                self.logger.print("Fail")
                 return
-        print("Success")
+        self.logger.print("Success")

@@ -23,9 +23,17 @@ class Logger:
                 raise RuntimeError("Git root not found.")
         return current_dir
 
+    def create_latest_logfile(self, log_file_path):
+        try:
+            with open(log_file_path, "w") as f:
+                f.write("Initial content if needed")
+            print(f"Created log file: {log_file_path}")
+        except IOError as e:
+            print(f"Failed to create log file: {e}")
+
     def check_latest_log_size(self, log_file_path):
         if not os.path.exists(log_file_path):
-            raise FileNotFoundError(f"Log file '{log_file_path}' not found.")
+            self.create_latest_logfile(log_file_path)
         log_file_size = os.path.getsize(log_file_path)
         log_file_size_kb = log_file_size / 1024
         if log_file_size_kb > 10:

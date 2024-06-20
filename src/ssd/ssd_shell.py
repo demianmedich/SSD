@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from src.ssd.shell import ReadResultAccessor, Shell
+from ssd.core.logger import Logger
 
 # TODO: 얘를 shell로 바꾸고 기존 shell.py는 control.py 등으로 변경
 
@@ -13,6 +14,25 @@ class SsdShell(cmd.Cmd):
     def __init__(self, ctrl: Shell):
         super().__init__()
         self.ssd_ctrl = ctrl
+        self.logger = Logger()
+
+    def do_erase(self, args):
+        try:
+            args = args.split()
+            if len(args) != 2:
+                raise ValueError
+            self.ssd_ctrl.erase(int(args[0]), int(args[1]))
+        except ValueError:
+            self.ssd_ctrl.help()
+
+    def do_erase_range(self, args):
+        try:
+            args = args.split()
+            if len(args) != 2:
+                raise ValueError
+            self.ssd_ctrl.erase_range(int(args[0]), int(args[1]))
+        except ValueError:
+            self.ssd_ctrl.help()
 
     def do_read(self, args):
         try:
@@ -58,7 +78,7 @@ class SsdShell(cmd.Cmd):
 
     def default(self, line):
         """Handle invalid commands"""
-        print("INVALID COMMAND")
+        self.logger.print("INVALID COMMAND")
 
     def emptyline(self):
         pass
