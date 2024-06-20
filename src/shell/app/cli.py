@@ -45,8 +45,18 @@ class SsdTestShellApp(cmd.Cmd):
     def do_flush(self, args):
         self.logger.print("FLUSH!")
 
-    def default(self, line):
-        self.logger.print("INVALID COMMAND")
+    def default(self, args: str):
+        try:
+            script_path = self._script_manager.find(args)
+        except FileNotFoundError:
+            self.logger.print("INVALID COMMAND")
+            return
+
+        try:
+            ret = self._script_manager.execute(script_path)
+            print("Pass" if ret else "Fail")
+        except Exception as e:
+            print(e)
 
     def emptyline(self):
         pass
