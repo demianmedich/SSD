@@ -4,12 +4,14 @@ TODO:
     그 검증 스크립트는 Shell에서도 실행할 수 있어야 한다.
 """
 
-import os
 from pathlib import Path
+
+from shell.app.util import ScriptManager
 
 
 class SsdTestRunnerApp:
-    script_dir_path = Path(__file__).parent.parent.parent.joinpath("script")
+    def __init__(self):
+        self._script_manager = ScriptManager()
 
     def execute_runlist(self, run_list_path: Path | str) -> None:
         run_list_path = Path(run_list_path).absolute()
@@ -20,7 +22,7 @@ class SsdTestRunnerApp:
         script_names = self._parse_run_list(run_list_path)
 
         try:
-            script_paths = self._collect_scripts(script_names)
+            script_paths = self._script_manager.collect(script_names)
             print(script_paths)
         except FileNotFoundError as e:
             print(f"FileNotFoundError: {e}")
@@ -28,41 +30,13 @@ class SsdTestRunnerApp:
 
         for _name, _path in zip(script_names, script_paths):
             print(f"{_name}\t---\tRun...", end="")
-            test_result = self._run_script(_path)
+            test_result = self._script_manager.execute(_path)
             if not test_result:
                 print("FAIL!")
                 break
             print("Pass")
 
-    def _parse_run_list(self, run_list: Path) -> list[str]:
+    @staticmethod
+    def _parse_run_list(run_list: Path) -> list[str]:
         with open(run_list, "r") as file:
             return file.read().strip().split("\n")
-
-    def _collect_scripts(self, script_names: list[str]) -> list[Path]:
-        script_paths = []
-        missing = []
-
-        for name in script_names:
-            script_path = self.script_dir_path / f"{name}.py"
-            if script_path.exists():
-                script_paths.append(script_path)
-            else:
-                missing.append(script_path)
-
-        if missing:
-            raise FileNotFoundError(", ".join(map(str, missing)))
-
-        return script_paths
-
-    def _run_script(self, script_path: Path) -> bool:
-        # TODO!
-        # 근데 어떻게? os.system 하면 결과를 받아 오기 애매해.
-
-        # subprocessing 쓰면 되려나? stdout을 redirect하지 않는 한 콘솔 print 안되긴 하겠지.
-        # 마지막 print된 것만 테스트 결과로 간주하고 파싱해서 쓸까?
-
-        #  아님 script에서 Command를 상속한 클래스를 파싱해서 import하고 그걸 실행할까?
-        # gpt야 도와줘
-
-        os.system(f"python {script_path}")
-        return True
