@@ -7,6 +7,8 @@ TODO
 
 import cmd
 
+from ssd.core.logger import Logger
+
 
 class SsdTestShellApp(cmd.Cmd):
     intro = "Welcome to the SSD Test Shell. Type help to list commands.\n"
@@ -14,33 +16,34 @@ class SsdTestShellApp(cmd.Cmd):
 
     def __init__(self):
         super().__init__()
+        self.LOG = Logger()
 
     def do_read(self, args):
-        print("read!")
+        self.LOG.print("read!")
 
     def do_write(self, args):
-        print("Write!")
+        self.LOG.print("Write!")
 
     def do_exit(self, args):
         return True
 
     def do_help(self, args):
-        print("HELp!")
+        self.LOG.print("HELp!")
 
     def do_fullread(self, args):
-        print("FULLREAD")
+        self.LOG.print("FULLREAD")
 
     def do_fullwrite(self, args):
-        print("FULLWRITE")
+        self.LOG.print("FULLWRITE")
 
     def do_erase(self, args):
-        print("ERASE!")
+        self.LOG.print("ERASE!")
 
     def do_flush(self, args):
-        print("FLUSH!")
+        self.LOG.print("FLUSH!")
 
     def default(self, line):
-        print("INVALID COMMAND")
+        self.LOG.print("INVALID COMMAND")
 
     def emptyline(self):
         pass
