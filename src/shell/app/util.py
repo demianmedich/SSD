@@ -27,7 +27,8 @@ class ScriptManager:
 
         return script_paths
 
-    def execute(self, script_path: Path | str) -> bool:
+    @staticmethod
+    def execute(script_path: Path | str) -> bool:
         ret = subprocess.run(["python", str(script_path)], capture_output=True)
         return ret.returncode == 0
 

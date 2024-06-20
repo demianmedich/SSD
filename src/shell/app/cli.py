@@ -3,9 +3,12 @@ TODO
     1. 모든 명령 default 에서 관리
     2. 모든 에러 catch 해서 print
     3. Command Pattern 적용
+    4. ssd.shell 로 이동
 """
 
 import cmd
+
+from shell.app.util import ScriptManager
 
 
 class SsdTestShellApp(cmd.Cmd):
@@ -14,6 +17,7 @@ class SsdTestShellApp(cmd.Cmd):
 
     def __init__(self):
         super().__init__()
+        self._script_manager = ScriptManager()
 
     def do_read(self, args):
         print("read!")
