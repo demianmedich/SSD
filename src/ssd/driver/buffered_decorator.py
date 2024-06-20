@@ -7,7 +7,7 @@ BUFFER_TXT = "buffer.txt"
 RESULT_FILE = "result.txt"
 
 
-class CommandBufferedSSD(SSDInterface):
+class CommandBufferedDecorator(SSDInterface):
     def __init__(self, ssd: SSDInterface, rootdir: str | Path = Path.cwd()):
         self.rootdir = Path(rootdir)
         self._buffer_txt_path = self.rootdir / BUFFER_TXT
