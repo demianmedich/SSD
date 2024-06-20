@@ -2,7 +2,7 @@ import cmd
 import os
 from pathlib import Path
 
-from src.ssd.shell import ReadResultAccessor, Shell
+from ssd.shell.shell import ReadResultAccessor, Shell
 from ssd.util.logger import Logger
 
 # TODO: 얘를 shell로 바꾸고 기존 shell.py는 control.py 등으로 변경
