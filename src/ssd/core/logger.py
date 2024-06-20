@@ -49,14 +49,23 @@ class Logger:
         os.rename(log_file_path, new_file_path)
         return new_file_path
 
+    def change_extension_to_zip(self, log_file_path):
+        if not os.path.exists(log_file_path):
+            raise FileNotFoundError(f"File '{log_file_path}' not found.")
+        dir_name, old_file_name = os.path.split(log_file_path)
+        file_name, extension = os.path.splitext(old_file_name)
+        new_file_path = os.path.join(dir_name, file_name + ".zip")
+        os.rename(log_file_path, new_file_path)
+        return new_file_path
+
     def save_log(self, log):
         root_folder = self.find_git_root()
         log_folder = os.path.join(root_folder, "log")
         log_file_path = os.path.join(log_folder, "latest.log")
         if self.check_latest_log_size(log_file_path):
             until_file_path = self.check_until_log_file_existence(log_folder)
-            if until_file_path != None:
-                print(until_file_path)
+            if until_file_path:
+                self.change_extension_to_zip(until_file_path)
             self.rename_latest_log(log_file_path)
             print("OVER")
 
