@@ -32,11 +32,20 @@ class Logger:
             return True
         return False
 
+    def rename_latest_log(self, log_file_path):
+        dir_name, old_file_name = os.path.split(log_file_path)
+        current_time = datetime.datetime.now()
+        new_file_name = f"until_{current_time.strftime('%Y%m%d_%Hh_%Mm_%Ss')}.log"
+        new_file_path = os.path.join(dir_name, new_file_name)
+        os.rename(log_file_path, new_file_path)
+        return new_file_path
+
     def save_log(self, log):
         root_folder = self.find_git_root()
         log_folder = os.path.join(root_folder, "log")
         log_file_path = os.path.join(log_folder, "latest.log")
         if self.check_latest_log_size(log_file_path):
+            self.rename_latest_log(log_file_path)
             print("OVER")
 
         with open(log_file_path, "a") as file:
