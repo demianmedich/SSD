@@ -64,9 +64,9 @@ class CommandBuffer:
             self.flush()
 
     def _read_commands_buffer_txt(self) -> list[str]:
-        commands = self._buffer_txt_path.read_text(encoding="utf-8").split("\n")
-        return [cmd for cmd in commands if cmd]
-        # return commands
+        cmds = self._buffer_txt_path.read_text(encoding="utf-8").split("\n")
+        return [cmd for cmd in cmds if cmd]
+        # return cmds
 
     def _make_initial_buffer(self):
         with open(self._buffer_txt_path, mode="a+", encoding="utf-8", newline="\n"):
