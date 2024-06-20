@@ -15,3 +15,7 @@ class SSDInterface(ABC):
     @abstractmethod
     def erase(self, addr: int, size: int):
         raise NotImplementedError()
+
+    @abstractmethod
+    def flush(self):
+        raise NotImplementedError()

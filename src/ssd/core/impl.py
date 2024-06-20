@@ -75,5 +75,8 @@ class VirtualSSD(SSDInterface):
                 f.seek(len(f.readline()) * addr)
                 f.write(self.data_format(addr, DEFAULT_VALUE))
 
+    def flush(self):
+        pass
+
     def data_format(self, addr: int, data: int) -> str:
         return f"{addr:02}\t0x{data:08X}\n"
