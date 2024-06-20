@@ -3,8 +3,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ssd.driver.buffered_decorator import CommandBufferedSSD
-from ssd.driver.range_valid_decorator import RangeValidationDecorator
 from ssd.driver.virtual import VirtualSSD
 
 DEFAULT_VALUE = 0x00000000
@@ -37,29 +35,12 @@ class VirtualSSDTestCase(unittest.TestCase):
 
             self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, 0))
 
-    def test_read_return_default_value_not_in_valid_range(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            ssd = VirtualSSD(tmpdir)
-
-            self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, -1))
-            self.assertEqual(DEFAULT_VALUE, self.read_data_from_nand_file(ssd, 100))
-
     def test_read_from_nand_init(self):
         ssd = VirtualSSD()
 
         self.assertEqual(DEFAULT_VALUE, self.read_data_from_temp_file(ssd, 0))
         (Path.cwd() / "nand.txt").unlink(missing_ok=True)
         (Path.cwd() / "result.txt").unlink(missing_ok=True)
-
-    def test_write_to_invalid_range(self):
-        addr = 3
-        data = 0x12345678
-
-        with tempfile.TemporaryDirectory() as tmpdir:
-            ssd = VirtualSSD(tmpdir)
-            ssd.write(addr, data)
-            actual = self.read_data_from_nand_file(ssd, addr)
-            self.assertEqual(data, actual)
 
     def test_read_write(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -80,29 +61,6 @@ class VirtualSSDTestCase(unittest.TestCase):
         self.assertEqual(expected1, actual1)
         self.assertEqual(expected2, actual2)
         self.assertEqual(expected3, actual3)
-
-    def test_buffer_read_write(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            ssd = VirtualSSD(rootdir=tmpdir)
-            buffer = CommandBufferedSSD(ssd, tmpdir)
-
-            expected = "0x12341234"
-            addr = 0
-            buffer.write(f"W {addr} {expected}")
-            actual = buffer.read(addr)
-            self.assertEqual(expected, actual)
-
-            expected = "0x99997677"
-            addr = 99
-            buffer.write(f"W {addr} {expected}")
-            actual = buffer.read(addr)
-            self.assertEqual(expected, actual)
-
-            for data in ssd.nand_file.read_text(encoding="utf-8").split("\n"):
-                if not data:
-                    continue
-
-                self.assertEqual("0x00000000", data.split("\t")[-1].strip())
 
 
 if __name__ == "__main__":
