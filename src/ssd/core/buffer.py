@@ -72,12 +72,44 @@ class CommandBuffer:
             pass
 
     def _optimize_commands(self, commands: list[str]) -> bool:
-        """TODO: 최적화 로직을 구현해주세요.
+        changed = False
+        for i in range(len(commands)):
+            if commands[i].startswith("W"):
+                _, addr, value = commands[i].split()
 
-        Returns:
-            True: 최적화로 인해 커맨드 변경됐음.
-            False: 커맨드 변경사항 없음.
-        """
-        if not commands:
-            return False
-        return False
+                for j in range(i + 1, len(commands)):
+                    if commands[j].startswith(f"W {addr}"):
+                        changed = True
+                    elif commands[j].startswith("E"):
+                        _, erase_addr, erase_size = commands[j].split()
+                        if erase_addr <= addr < erase_addr + erase_size:
+                            changed = True
+                    else:
+                        break
+                    if changed:
+                        del commands[i]
+                        i = j
+            else:
+                _, addr, size = commands[i].split()
+                for j in range(i + 1, len(commands)):
+                    if commands[j].startswith("W"):
+                        _, write_addr, write_value = commands[j].split()
+                        if addr <= write_addr < addr + size:
+                            changed = True
+                            del commands[i]
+                            commands.insert(i, f"E {addr} {write_addr - addr}")
+                            commands.insert(
+                                i + 1,
+                                f"E {write_addr + 1} {addr + size - write_addr - 1}",
+                            )
+                            break
+                    elif commands[j].startswith("E"):
+                        _, erase_addr, erase_size = commands[j].split()
+                        if (
+                            erase_addr <= addr < erase_addr + erase_size
+                            or erase_addr <= addr + size <= erase_addr + erase_size
+                        ):
+                            changed = True
+                            """ing"""
+
+        return changed
