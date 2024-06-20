@@ -97,15 +97,16 @@ class CommandBuffer:
                             del commands[j]
                             if erase_addr + erase_size != addr + 1:
                                 commands.insert(
-                                    j, f"E {addr + 1} {erase_addr + size - addr - 1}"
+                                    j,
+                                    f"E {addr + 1} {erase_addr + erase_size - addr - 1}",
                                 )
-                            if add != erase_addr:
+                            if addr != erase_addr:
                                 commands.insert(j, f"E {addr} {addr - erase_addr}")
                 else:
-                    if commands[j].startswith(f"W"):
+                    if commands[j].startswith("W"):
                         _, write_addr, _ = commands[j].split()
 
-                        if addr <= write_addr < addr + size:
+                        if addr <= write_addr < addr + value:
                             i_updated = True
                             del commands[j]
 
@@ -114,11 +115,11 @@ class CommandBuffer:
                         erase_addr, erase_size = int(erase_addr), int(erase_size)
                         if (
                             erase_addr <= addr <= erase_addr + erase_size
-                            or erase_addr <= addr + size <= erase_addr + erase_size
+                            or erase_addr <= addr + value <= erase_addr + erase_size
                         ):
 
                             min_addr = min(addr, erase_addr)
-                            max_addr = min(addr + size, erase_addr + erase_size)
+                            max_addr = min(addr + value, erase_addr + erase_size)
                             if max_addr - min_addr <= 10:
                                 i_updated = True
                                 commands[i] = "E {min_addr} {max_addr - min_addr}"
