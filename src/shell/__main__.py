@@ -1,7 +1,7 @@
 import sys
 
-from shell.app.test_runner import SsdTestRunnerApp
-from shell.app.test_shell import SsdTestShellApp
+from shell.app.cli import SsdTestShellApp
+from shell.app.runner import SsdTestRunnerApp
 
 
 def main():

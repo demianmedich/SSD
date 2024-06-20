@@ -1,7 +1,7 @@
 """
 TODO
     1. 모든 명령 default 에서 관리
-    2. 모든 에러 catch해서 print
+    2. 모든 에러 catch 해서 print
     3. Command Pattern 적용
 """
 
@@ -32,6 +32,12 @@ class SsdTestShellApp(cmd.Cmd):
 
     def do_fullwrite(self, args):
         print("FULLWRITE")
+
+    def do_erase(self, args):
+        print("ERASE!")
+
+    def do_flush(self, args):
+        print("FLUSH!")
 
     def default(self, line):
         print("INVALID COMMAND")
