@@ -28,7 +28,7 @@ class Logger:
             raise FileNotFoundError(f"Log file '{log_file_path}' not found.")
         log_file_size = os.path.getsize(log_file_path)
         log_file_size_kb = log_file_size / 1024
-        if log_file_size_kb > 1:
+        if log_file_size_kb > 10:
             return True
         return False
 
