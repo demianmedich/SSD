@@ -18,7 +18,7 @@ class CommandBuffer:
 
     def flush(self) -> None:
         cmds = self._read_commands_buffer_txt()
-        for opcode, addr, value_or_cnt in cmds:
+        for opcode, addr, value_or_cnt in [_.split(" ") for _ in cmds]:
             match opcode:
                 case "W":
                     self._ssd.write(addr, data=value_or_cnt)
