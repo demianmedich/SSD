@@ -6,13 +6,13 @@ from ssd.core.logger import Logger
 
 
 def main():
-    LOG = Logger
+    logger = Logger()
     if len(sys.argv) == 1:
         SsdTestShellApp().cmdloop()
     elif len(sys.argv) == 2:
         SsdTestRunnerApp().execute_runlist(sys.argv[1])
     else:
-        LOG.print("Invalid number of arguments.")
+        logger.print("Invalid number of arguments.")
 
 
 if __name__ == "__main__":
