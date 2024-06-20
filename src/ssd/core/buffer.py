@@ -13,12 +13,11 @@ class CommandBuffer:
         self._buffer_txt_path = rootdir / BUFFER_TXT
         self._ssd = ssd
 
-        if not self._buffer_txt_path.exists():
-            self._make_initial_buffer()
+        self._make_initial_buffer()
 
     def flush(self) -> None:
         cmds = self._read_commands_buffer_txt()
-        for opcode, addr, value_or_cnt in [_.split(" ") for _ in cmds]:
+        for opcode, addr, value_or_cnt in cmds:
             match opcode:
                 case "W":
                     self._ssd.write(addr, data=value_or_cnt)
@@ -49,7 +48,7 @@ class CommandBuffer:
     def write(self, cmd: str) -> None:
         cmds = self._read_commands_buffer_txt()
         cmds.append(cmd)
-        changed = self._optimize_commands(cmds)
+        changed, commands = self._optimize_commands(cmds)
 
         if changed:
             with open(
@@ -71,48 +70,69 @@ class CommandBuffer:
         # return cmds
 
     def _make_initial_buffer(self):
-        with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
+        with open(self._buffer_txt_path, mode="a+", encoding="utf-8", newline="\n"):
             pass
 
-    def _optimize_commands(self, commands: list[str]) -> bool:
+    def _optimize_commands(self, commands: list[str]):
         changed = False
-        for i in range(len(commands)):
-            if commands[i].startswith("W"):
-                _, addr, value = commands[i].split()
+        i = 0
 
-                for j in range(i + 1, len(commands)):
+        while i < len(commands):
+            if commands[i].startswith("W"):
+                _, addr, _ = commands[i].split()
+                addr = int(addr)
+
+                j = i + 1
+                while j < len(commands):
                     if commands[j].startswith(f"W {addr}"):
                         changed = True
                     elif commands[j].startswith("E"):
                         _, erase_addr, erase_size = commands[j].split()
+                        erase_addr, erase_size = int(erase_addr), int(erase_size)
                         if erase_addr <= addr < erase_addr + erase_size:
                             changed = True
-                    else:
-                        break
+
                     if changed:
                         del commands[i]
-                        i = j
+                        break
+
+                    j += 1
             else:
                 _, addr, size = commands[i].split()
-                for j in range(i + 1, len(commands)):
+                addr, size = int(addr), int(size)
+
+                j = i + 1
+                while j < len(commands):
                     if commands[j].startswith("W"):
-                        _, write_addr, write_value = commands[j].split()
+                        _, write_addr, _ = commands[j].split()
+                        write_addr = int(write_addr)
+
                         if addr <= write_addr < addr + size:
                             changed = True
                             del commands[i]
-                            commands.insert(i, f"E {addr} {write_addr - addr}")
-                            commands.insert(
-                                i + 1,
-                                f"E {write_addr + 1} {addr + size - write_addr - 1}",
-                            )
+
+                            if write_addr != addr:
+                                commands.insert(i, f"E {addr} {write_addr - addr}")
+                            if addr + size != write_addr + 1:
+                                commands.insert(
+                                    i + 1,
+                                    f"E {write_addr + 1} {addr + size - write_addr - 1}",
+                                )
                             break
                     elif commands[j].startswith("E"):
                         _, erase_addr, erase_size = commands[j].split()
+                        erase_addr, erase_size = int(erase_addr), int(erase_size)
                         if (
                             erase_addr <= addr < erase_addr + erase_size
-                            or erase_addr <= addr + size <= erase_addr + erase_size
+                            or erase_addr < addr + size <= erase_addr + erase_size
                         ):
                             changed = True
-                            """ing"""
+                            min_addr = min(addr, erase_addr)
+                            max_addr = min(addr + size, erase_addr + erase_size)
+                            commands.insert(j, f"E {min_addr} {max_addr - min_addr}")
+                            del commands[i]
+                            break
 
-        return changed
+                    j += 1
+            i += 1
+        return changed, commands
