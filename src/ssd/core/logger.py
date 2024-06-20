@@ -15,11 +15,11 @@ class Logger:
 
         call = inspect.stack()[1]
         function_name = call.function
+        function_name = function_name[:30]
+        print(f"{current_time} {function_name.center(30)} : {message}")
 
-        print(f"{current_time} - {function_name} - {message}")
 
-
-def test_qqq():
+def test_qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq():
     logger1 = Logger()
     logger2 = Logger()
 
