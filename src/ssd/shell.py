@@ -66,6 +66,13 @@ class Shell:
         print(read_result)
         return read_result
 
+    def erase(self, address: int, size: int):
+        if not (self.__min_lba <= address <= self.__max_lba and 1 <= size <= 10):
+            self.help()
+            return
+
+        os.system(f"python -m ssd E {address} {size}")
+
     @staticmethod
     def _is_valid_address(address):
         return 0 <= address <= 99
