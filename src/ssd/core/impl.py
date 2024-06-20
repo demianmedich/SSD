@@ -77,7 +77,7 @@ class VirtualSSD(SSDInterface):
         self.erase(start_addr, end_addr - start_addr)
 
     def flush(self):
-        pass
+        self._buffer.flush()
 
     def data_format(self, addr: int, data: int) -> str:
         return f"{addr:02}\t0x{data:08X}\n"
