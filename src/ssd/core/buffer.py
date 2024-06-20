@@ -122,6 +122,8 @@ class CommandBuffer:
                                 changed = True
                                 commands[i] = "E {min_addr} {max_addr - min_addr}"
 
+                j -= 1
+
             if changed:
                 i = len(commands) - 1
                 updated_commands = True
