@@ -3,8 +3,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ssd.core.buffer import CommandBuffer
-from ssd.core.impl import VirtualSSD
+from ssd.driver.buffer import CommandBuffer
+from ssd.driver.virtual import VirtualSSD
 
 DEFAULT_VALUE = 0x00000000
 
@@ -88,8 +88,20 @@ class VirtualSSDTestCase(unittest.TestCase):
             expected = "0x12341234"
             addr = 0
             buffer.write(f"W {addr} {expected}")
-            actual = buffer.read(0)
+            actual = buffer.read(addr)
             self.assertEqual(expected, actual)
+
+            expected = "0x99997677"
+            addr = 99
+            buffer.write(f"W {addr} {expected}")
+            actual = buffer.read(addr)
+            self.assertEqual(expected, actual)
+
+            for data in ssd.nand_file.read_text(encoding="utf-8").split("\n"):
+                if not data:
+                    continue
+
+                self.assertEqual("0x00000000", data.split("\t")[-1].strip())
 
 
 if __name__ == "__main__":

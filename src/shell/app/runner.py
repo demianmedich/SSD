@@ -7,7 +7,7 @@ TODO:
 from pathlib import Path
 
 from shell.app.util import ScriptManager
-from ssd.core.logger import Logger
+from ssd.util.logger import Logger
 
 
 class SsdTestRunnerApp:

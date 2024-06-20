@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 
-from ssd.core.logger import Logger
+from ssd.util.logger import Logger
 
 
 class ScriptManager:

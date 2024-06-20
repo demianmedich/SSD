@@ -2,7 +2,7 @@ import sys
 
 from shell.app.cli import SsdTestShellApp
 from shell.app.runner import SsdTestRunnerApp
-from ssd.core.logger import Logger
+from ssd.util.logger import Logger
 
 
 def main():
