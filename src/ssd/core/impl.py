@@ -61,7 +61,7 @@ class VirtualSSD(SSDInterface):
             f.write(self.data_format(addr, data))
 
     def erase(self, addr: int, size: int):
-        if not ((0 < size <= 10) and (addr + size < 100)):
+        if not ((0 < size <= 10) and (addr + size <= 100) and (0 <= addr)):
             self.print_help()
             return
 
