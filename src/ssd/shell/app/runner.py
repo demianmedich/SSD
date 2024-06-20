@@ -6,7 +6,7 @@ TODO:
 
 from pathlib import Path
 
-from shell.app.util import ScriptManager
+from ssd.shell.app.util import ScriptManager
 from ssd.util.logger import Logger
 
 
