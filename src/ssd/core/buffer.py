@@ -9,7 +9,6 @@ BUFFER_TXT = "buffer.txt"
 class CommandBuffer:
     def __init__(self, ssd: SSDInterface, rootdir: str | Path = Path.cwd()):
         rootdir = Path(rootdir)
-        self._nand_txt_path = rootdir / NAND_FILE
         self._buffer_txt_path = rootdir / BUFFER_TXT
         self._ssd = ssd
 
