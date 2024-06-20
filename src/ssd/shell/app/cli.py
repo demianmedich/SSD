@@ -90,9 +90,9 @@ class SsdTestShellApp(cmd.Cmd):
 
         try:
             ret = self._script_manager.execute(script_path)
-            print("Pass" if ret else "Fail")
+            self.logger.print("Pass" if ret else "Fail")
         except Exception as e:
-            print(e)
+            self.logger.print(e)
 
     def emptyline(self):
         pass
