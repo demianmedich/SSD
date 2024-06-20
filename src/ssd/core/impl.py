@@ -2,6 +2,7 @@
 from pathlib import Path
 
 from src.ssd.core.base import SSDInterface
+from ssd.__main__ import print_help
 
 DEFAULT_VALUE = 0x00000000
 
@@ -54,9 +55,7 @@ class VirtualSSD(SSDInterface):
 
     def erase(self, addr: int, size: int):
         if size < 1 or size > 10:
-            print("Invalid command!")
-            print("Erase: python ssd E {addr} {size}")
-            print("addr = [0, 99], 1 <= size <= 10")
+            print_help()
             return
 
         with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
