@@ -59,14 +59,10 @@ class VirtualSSD(SSDInterface):
             return
 
         with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
-            for i in range(size):
-                if addr + i > 99:
-                    break
-                f.seek(len(f.readline()) * (addr + i))
-                f.write(self.data_format(addr + i, DEFAULT_VALUE))
+            f.seek(len(f.readline()) * addr)
+            f.writelines(self.data_format(addr + i, DEFAULT_VALUE) for i in range(size))
 
     def erase_range(self, start_addr: int, end_addr: int):
-
         with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
             for addr in range(start_addr, end_addr):
                 if addr > 99:

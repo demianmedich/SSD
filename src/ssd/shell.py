@@ -78,7 +78,11 @@ class Shell:
             self.help()
             return
 
-        os.system(f"python -m ssd E {start_address} {end_address - start_address}")
+        while start_address < end_address:
+            size = min(10, end_address - start_address)
+            self.erase(start_address, size)
+            os.system(f"python -m ssd E {start_address} {size}")
+            start_address += size
 
     @staticmethod
     def _is_valid_address(address):
