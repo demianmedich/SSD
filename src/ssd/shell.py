@@ -67,14 +67,13 @@ class Shell:
         return read_result
 
     def erase(self, address: int, size: int):
-        if not ((0 < size <= 10) and (address + size < 100) and (0 <= address)):
+        if not ((0 < size) and (address + size < 100) and (0 <= address)):
             self.help()
             return
 
         end_address = address + size
         while address < end_address:
             size = min(10, end_address - address)
-            self.erase(address, size)
             os.system(f"python -m ssd E {address} {size}")
             address += size
 
