@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from src.ssd.driver.base import SSDInterface
-from ssd.driver.buffer import CommandBuffer
+from ssd.util.logger import Logger
 
 DEFAULT_VALUE = 0x00000000
 
@@ -17,7 +17,7 @@ class VirtualSSD(SSDInterface):
 
     def __init__(self, rootdir: str | Path = Path.cwd()):
         self.set_rootdir(rootdir)
-        self._buffer = CommandBuffer(self, rootdir)
+        self._logger = Logger()
 
     def set_rootdir(self, rootdir: str | Path):
         rootdir = Path(rootdir)
@@ -48,27 +48,17 @@ class VirtualSSD(SSDInterface):
         print("addr = [0, 99], data = 0xXXXXXXXX, size = [1, 10]")
 
     def read(self, addr: int):
-        if 0 > addr or addr > 99:
-            self.result_file.write_text(f"0x{DEFAULT_VALUE:08X}")
-            return
-
-        try:
-            data = self._buffer.read(addr)
-        except ValueError:
-            with open(self.nand_file, mode="rt", encoding="utf-8", newline="\n") as f:
-                f.seek(len(f.readline()) * addr)
-                data = f.readline().split()[-1].strip()
-        finally:
+        with open(self.nand_file, mode="rt", encoding="utf-8", newline="\n") as f:
+            f.seek(len(f.readline()) * addr)
+            data = f.readline().split()[-1].strip()
             self.result_file.write_text(data)
 
     def write(self, addr: int, data: int):
-        self._buffer.write(f"W {addr} 0x{data:08X}")
+        with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
+            f.seek(len(f.readline()) * addr)
+            f.write(self.data_format(addr, data))
 
     def erase(self, addr: int, size: int):
-        if not ((0 < size <= 10) and (addr + size <= 100) and (0 <= addr)):
-            self.print_help()
-            return
-
         for i in range(size):
             self.write(addr + i, DEFAULT_VALUE)
 
@@ -76,7 +66,7 @@ class VirtualSSD(SSDInterface):
         self.erase(start_addr, end_addr - start_addr)
 
     def flush(self):
-        self._buffer.flush()
+        pass
 
     def data_format(self, addr: int, data: int) -> str:
         return f"{addr:02}\t0x{data:08X}\n"

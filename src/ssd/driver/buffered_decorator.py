@@ -4,50 +4,45 @@ from ssd.driver.base import SSDInterface
 
 NAND_FILE = "nand.txt"
 BUFFER_TXT = "buffer.txt"
+RESULT_FILE = "result.txt"
 
 
-class CommandBuffer:
+class CommandBufferedSSD(SSDInterface):
     def __init__(self, ssd: SSDInterface, rootdir: str | Path = Path.cwd()):
-        rootdir = Path(rootdir)
-        self._buffer_txt_path = rootdir / BUFFER_TXT
+        self.rootdir = Path(rootdir)
+        self._buffer_txt_path = self.rootdir / BUFFER_TXT
+        self._result_txt_path = self.rootdir / RESULT_FILE
         self._ssd = ssd
 
         self._make_initial_buffer()
 
-    def flush(self) -> None:
-        cmds = self._read_commands_buffer_txt()
-        for opcode, addr, value_or_cnt in cmds:
-            match opcode:
-                case "W":
-                    self._ssd.write(addr, value_or_cnt)
-                case "E":
-                    self._ssd.erase(addr, value_or_cnt)
-                case _:
-                    raise ValueError(f"Invalid opcode {opcode}")
-
-    def read(self, requested_address: int) -> str:
-        if requested_address < 0 or requested_address >= 100:
-            raise ValueError(f"Invalid address {requested_address}")
-
+    def read(self, addr: int) -> None:
         for cmd in self._read_commands_buffer_txt():
             opcode, address, value_or_cnt = cmd.split()
 
-            if int(address) == requested_address:
+            if int(address) == addr:
                 match opcode:
                     case "W":
-                        return value_or_cnt
+                        self._result_txt_path.write_text(value_or_cnt)
+                        return
                     case "E":
-                        return "0x00000000"
+                        self._result_txt_path.write_text("0x00000000")
+                        return
                     case _:
                         raise ValueError(f"Invalid opcode {opcode}")
 
-        raise ValueError(f"Not found data")
+        self._ssd.read(addr)
 
-    def write(self, cmd: str) -> None:
+    def write(self, addr: int, data: int):
+        self._buffer_command(f"W {addr} 0x{data:08X}")
+
+    def erase(self, addr: int, size: int):
+        self._buffer_command(f"E {addr} {size}")
+
+    def _buffer_command(self, cmd):
         commands = self._read_commands_buffer_txt()
         commands.append(cmd)
         changed = self._optimize_commands(commands)
-
         if changed:
             with open(
                 self._buffer_txt_path, mode="wt", encoding="utf-8", newline="\n"
@@ -58,6 +53,21 @@ class CommandBuffer:
                 self._buffer_txt_path, mode="r+", encoding="utf-8", newline="\n"
             ) as f:
                 f.write(f"{cmd}\n")
+
+    def flush(self) -> None:
+        cmds = self._read_commands_buffer_txt()
+        for cmd in cmds:
+            opcode, addr, value_or_cnt = cmd.split()
+            addr = int(addr)
+            match opcode:
+                case "W":
+                    self._ssd.write(int(addr), int(value_or_cnt, 16))
+                case "E":
+                    self._ssd.erase(int(addr), int(value_or_cnt))
+                case _:
+                    raise ValueError(f"Invalid opcode {opcode}")
+
+        self._make_initial_buffer()
 
     def _read_commands_buffer_txt(self) -> list[str]:
         commands = self._buffer_txt_path.read_text(encoding="utf-8").split("\n")

@@ -3,7 +3,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ssd.driver.buffer import CommandBuffer
+from ssd.driver.buffered_decorator import CommandBufferedSSD
+from ssd.driver.range_valid_decorator import RangeValidationDecorator
 from ssd.driver.virtual import VirtualSSD
 
 DEFAULT_VALUE = 0x00000000
@@ -83,7 +84,7 @@ class VirtualSSDTestCase(unittest.TestCase):
     def test_buffer_read_write(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             ssd = VirtualSSD(rootdir=tmpdir)
-            buffer = CommandBuffer(ssd, tmpdir)
+            buffer = CommandBufferedSSD(ssd, tmpdir)
 
             expected = "0x12341234"
             addr = 0
