@@ -12,11 +12,11 @@ class Logger:
 
     def print(self, message):
         current_time = datetime.datetime.now().strftime("[%Y.%m.%d %H:%M:%S]")
-
+        len_function = 30
         call = inspect.stack()[1]
         function_name = call.function
-        function_name = function_name[:30]
-        print(f"{current_time} {function_name.center(30)} : {message}")
+        function_name = function_name[:len_function]
+        print(f"{current_time} {function_name.center(len_function)+'()'} : {message}")
 
 
 def test_qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq():
