@@ -2,13 +2,13 @@ import unittest
 from io import StringIO
 from unittest.mock import Mock, patch
 
-from ssd.shell.ssd_shell import SsdShell
+from ssd.shell.app.cli import SsdTestShellApp
 
 
 class TestSsdShell(unittest.TestCase):
     def setUp(self):
         self.mk = Mock()
-        self.sut = SsdShell(self.mk)
+        self.sut = SsdTestShellApp(self.mk)
 
     def test_write_one_arg(self):
         self.sut.onecmd("write 1")

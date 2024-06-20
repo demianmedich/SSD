@@ -1,6 +1,6 @@
 import sys
 
-from ssd.shell.app.cli import SsdTestShellApp
+from ssd.shell.app.my_cli import SsdTestShellAppOld
 from ssd.shell.app.runner import SsdTestRunnerApp
 from ssd.util.logger import Logger
 
@@ -8,7 +8,7 @@ from ssd.util.logger import Logger
 def main():
     logger = Logger()
     if len(sys.argv) == 1:
-        SsdTestShellApp().cmdloop()
+        SsdTestShellAppOld().cmdloop()
     elif len(sys.argv) == 2:
         SsdTestRunnerApp().execute_runlist(sys.argv[1])
     else:

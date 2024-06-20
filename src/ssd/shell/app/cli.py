@@ -1,14 +1,16 @@
 """
 TODO
-    1. 모든 명령 default 에서 관리
-    2. 모든 에러 catch 해서 print
-    3. Command Pattern 적용
-    4. ssd.shell 로 이동
+    1. Command 패턴 적용?
+    - 모든 명령 default 에서 관리
+    - 모든 에러 catch 해서 print
 """
 
 import cmd
+import os
+from pathlib import Path
 
 from ssd.shell.app.util import ScriptManager
+from ssd.shell.shell import ReadResultAccessor, Shell
 from ssd.util.logger import Logger
 
 
@@ -16,34 +18,68 @@ class SsdTestShellApp(cmd.Cmd):
     intro = "Welcome to the SSD Test Shell. Type help to list commands.\n"
     prompt = "> "
 
-    def __init__(self):
+    def __init__(self, ctrl: Shell):
         super().__init__()
+        self.ssd_ctrl = ctrl
         self.logger = Logger()
         self._script_manager = ScriptManager()
 
+    def do_erase(self, args):
+        try:
+            args = args.split()
+            if len(args) != 2:
+                raise ValueError
+            self.ssd_ctrl.erase(int(args[0]), int(args[1]))
+        except ValueError:
+            self.ssd_ctrl.help()
+
+    def do_erase_range(self, args):
+        try:
+            args = args.split()
+            if len(args) != 2:
+                raise ValueError
+            self.ssd_ctrl.erase_range(int(args[0]), int(args[1]))
+        except ValueError:
+            self.ssd_ctrl.help()
+
     def do_read(self, args):
-        self.logger.print("read!")
+        try:
+            args = args.split()
+            if len(args) != 1:
+                raise ValueError
+            self.ssd_ctrl.read(int(args[0]))
+        except ValueError:
+            self.ssd_ctrl.help()
 
     def do_write(self, args):
-        self.logger.print("Write!")
+        try:
+            args = args.split()
+            if len(args) != 2:
+                raise ValueError
+            self.ssd_ctrl.write(int(args[0]), args[1])
+        except ValueError:
+            self.ssd_ctrl.help()
 
     def do_exit(self, args):
         return True
 
     def do_help(self, args):
-        self.logger.print("HELp!")
+        self.ssd_ctrl.help()
 
     def do_fullread(self, args):
-        self.logger.print("FULLREAD")
+        self.ssd_ctrl.fullread()
 
     def do_fullwrite(self, args):
-        self.logger.print("FULLWRITE")
-
-    def do_erase(self, args):
-        self.logger.print("ERASE!")
+        try:
+            args = args.split()
+            if len(args) != 1:
+                raise ValueError
+            self.ssd_ctrl.fullwrite(args[0])
+        except ValueError:
+            self.ssd_ctrl.help()
 
     def do_flush(self, args):
-        self.logger.print("FLUSH!")
+        self.logger.print("추가 필요 해요")  # TODO
 
     def default(self, args: str):
         try:
@@ -60,3 +96,8 @@ class SsdTestShellApp(cmd.Cmd):
 
     def emptyline(self):
         pass
+
+
+if __name__ == "__main__":
+    app = SsdTestShellApp(Shell(ReadResultAccessor(Path(os.getcwd()))))
+    app.cmdloop()
