@@ -25,18 +25,17 @@ class SsdTestRunnerApp:
 
         try:
             script_paths = self._script_manager.collect(script_names)
-            self.logger.print(script_paths)
         except FileNotFoundError as e:
             self.logger.print(f"FileNotFoundError: {e}")
             return
 
         for _name, _path in zip(script_names, script_paths):
-            self.logger.print(f"{_name}\t---\tRun...")
+            print(f"{_name}\t---\tRun...", end="", flush=True)
             test_result = self._script_manager.execute(_path)
             if not test_result:
-                self.logger.print("FAIL!")
+                print("FAIL!")
                 break
-            self.logger.print("Pass")
+            print("Pass")
 
     @staticmethod
     def _parse_run_list(run_list: Path) -> list[str]:
