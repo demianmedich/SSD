@@ -1,7 +1,7 @@
 # coding=utf-8
 from pathlib import Path
 
-from src.ssd.core.base import SSDInterface
+from ssd.core.base import SSDInterface
 from ssd.core.buffer import CommandBuffer
 
 DEFAULT_VALUE = 0x00000000
@@ -68,10 +68,11 @@ class VirtualSSD(SSDInterface):
         #     f.write(self.data_format(addr, data))
 
     def erase(self, addr: int, size: int):
-        if not ((0 < size <= 10) and (addr + size <= 100) and (0 <= addr)):
-            self.print_help()
-            return
-        [self.write(addr + i, DEFAULT_VALUE) for i in range(size)]
+        self._buffer.write(f"E {addr} {size}")
+        # if not ((0 < size <= 10) and (addr + size <= 100) and (0 <= addr)):
+        #     self.print_help()
+        #     return
+        # [self.write(addr + i, DEFAULT_VALUE) for i in range(size)]
 
     def erase_range(self, start_addr: int, end_addr: int):
         self.erase(start_addr, end_addr - start_addr)
