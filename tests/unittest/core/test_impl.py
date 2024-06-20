@@ -3,7 +3,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ssd.core.impl import CommandBuffer, VirtualSSD
+from ssd.core.buffer import CommandBuffer
+from ssd.core.impl import VirtualSSD
 
 DEFAULT_VALUE = 0x00000000
 
