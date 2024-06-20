@@ -23,10 +23,22 @@ class Logger:
                 raise RuntimeError("Git root not found.")
         return current_dir
 
+    def check_latest_log_size(self, log_file_path):
+        if not os.path.exists(log_file_path):
+            raise FileNotFoundError(f"Log file '{log_file_path}' not found.")
+        log_file_size = os.path.getsize(log_file_path)
+        log_file_size_kb = log_file_size / 1024
+        if log_file_size_kb > 2:
+            return True
+        return False
+
     def save_log(self, log):
         root_folder = self.find_git_root()
         log_folder = os.path.join(root_folder, "log")
         log_file_path = os.path.join(log_folder, "latest.log")
+        if self.check_latest_log_size(log_file_path):
+            print("OVER")
+
         with open(log_file_path, "a") as file:
             file.write(log + "\n")
             print(log)
@@ -41,7 +53,7 @@ class Logger:
         self.save_log(log)
 
 
-def test_qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq():
+def qqq_q():
     logger1 = Logger()
     logger2 = Logger()
 
@@ -50,4 +62,5 @@ def test_qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq(
 
 
 if __name__ == "__main__":
-    test_qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq()
+    qqq_q()
+    qqq_q()
