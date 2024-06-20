@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ssd.core.impl import VirtualSSD
+from ssd.core.impl import CommandBuffer, VirtualSSD
 
 DEFAULT_VALUE = 0x00000000
 
@@ -78,6 +78,17 @@ class VirtualSSDTestCase(unittest.TestCase):
         self.assertEqual(expected1, actual1)
         self.assertEqual(expected2, actual2)
         self.assertEqual(expected3, actual3)
+
+    def test_buffer_read_write(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ssd = VirtualSSD(rootdir=tmpdir)
+            buffer = CommandBuffer(ssd, tmpdir)
+
+            expected = 0x12341234
+            addr = 0
+            buffer.write(f"W {addr} 0x{expected:08X}")
+            actual = buffer.read(0)
+            self.assertEqual(expected, actual)
 
 
 if __name__ == "__main__":
