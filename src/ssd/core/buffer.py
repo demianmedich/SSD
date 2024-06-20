@@ -28,7 +28,7 @@ class CommandBuffer:
                 case _:
                     raise ValueError(f"Invalid opcode {opcode}")
 
-    def read(self, requested_address: int) -> int:
+    def read(self, requested_address: int) -> str:
         if requested_address < 0 or requested_address >= 100:
             raise ValueError(f"Invalid address {requested_address}")
 
@@ -38,9 +38,9 @@ class CommandBuffer:
             if int(address) == requested_address:
                 match opcode:
                     case "W":
-                        return int(value_or_cnt, 16)
+                        return value_or_cnt
                     case "E":
-                        return 0
+                        return "0x00000000"
                     case _:
                         raise ValueError(f"Invalid opcode {opcode}")
 

@@ -85,9 +85,9 @@ class VirtualSSDTestCase(unittest.TestCase):
             ssd = VirtualSSD(rootdir=tmpdir)
             buffer = CommandBuffer(ssd, tmpdir)
 
-            expected = 0x12341234
+            expected = "0x12341234"
             addr = 0
-            buffer.write(f"W {addr} 0x{expected:08X}")
+            buffer.write(f"W {addr} {expected}")
             actual = buffer.read(0)
             self.assertEqual(expected, actual)
 
