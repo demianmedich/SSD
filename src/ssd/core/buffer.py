@@ -80,20 +80,20 @@ class CommandBuffer:
         i = len(commands) - 1
         while i > 0:
             changed = False
-            opcode, addr, value = commands[i].split()
-            addr, value = int(addr), int(value)
-
-            j = i - 1
-            while j > 0:
+            j = 0
+            while j < i:
+                i_updated = False
+                opcode, addr, value = commands[i].split()
+                addr, value = int(addr), int(value)
                 if opcode == "W":
                     if commands[j].startswith(f"W {addr}"):
-                        changed = True
+                        i_updated = True
                         del commands[j]
-                    elif commands[i].startswith("E"):
+                    elif commands[j].startswith("E"):
                         _, erase_addr, erase_size = commands[j].split()
                         erase_addr, erase_size = int(erase_addr), int(erase_size)
                         if erase_addr <= addr < erase_addr + erase_size:
-                            changed = True
+                            i_updated = True
                             del commands[j]
                             if erase_addr + erase_size != addr + 1:
                                 commands.insert(
@@ -106,24 +106,28 @@ class CommandBuffer:
                         _, write_addr, _ = commands[j].split()
 
                         if addr <= write_addr < addr + size:
-                            changed = True
+                            i_updated = True
                             del commands[j]
 
                     elif commands[j].startswith("E"):
                         _, erase_addr, erase_size = commands[j].split()
                         erase_addr, erase_size = int(erase_addr), int(erase_size)
                         if (
-                            erase_addr <= addr < erase_addr + erase_size
-                            or erase_addr < addr + size <= erase_addr + erase_size
+                            erase_addr <= addr <= erase_addr + erase_size
+                            or erase_addr <= addr + size <= erase_addr + erase_size
                         ):
 
                             min_addr = min(addr, erase_addr)
                             max_addr = min(addr + size, erase_addr + erase_size)
                             if max_addr - min_addr <= 10:
-                                changed = True
+                                i_updated = True
                                 commands[i] = "E {min_addr} {max_addr - min_addr}"
-
-                j -= 1
+                if i_updated:
+                    i = j
+                    j = 0
+                    changed = True
+                else:
+                    j += 1
 
             if changed:
                 i = len(commands) - 1
