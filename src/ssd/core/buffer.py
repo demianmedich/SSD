@@ -58,14 +58,13 @@ class CommandBuffer:
                 f.writelines(f"{cmd}\n" for cmd in commands)
         else:
             with open(
-                self._buffer_txt_path, mode="w+", encoding="utf-8", newline="\n"
+                self._buffer_txt_path, mode="r+", encoding="utf-8", newline="\n"
             ) as f:
                 f.write(f"{cmd}\n")
 
     def _read_commands_buffer_txt(self) -> list[str]:
         commands = self._buffer_txt_path.read_text(encoding="utf-8").split("\n")
         return [cmd for cmd in commands if cmd]
-        # return commands
 
     def _make_initial_buffer(self):
         with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
