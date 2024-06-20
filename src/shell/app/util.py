@@ -1,4 +1,4 @@
-import os
+import subprocess
 from pathlib import Path
 
 
@@ -27,18 +27,9 @@ class ScriptManager:
 
         return script_paths
 
-    def execute(self, script_path: str) -> bool:
-        # TODO!
-        # 근데 어떻게? os.system 하면 결과를 받아 오기 애매해.
-
-        # subprocessing 쓰면 되려나? stdout을 redirect하지 않는 한 콘솔 print 안되긴 하겠지.
-        # 마지막 print된 것만 테스트 결과로 간주하고 파싱해서 쓸까?
-
-        #  아님 script에서 Command를 상속한 클래스를 파싱해서 import하고 그걸 실행할까?
-        # gpt야 도와줘
-
-        os.system(f"python {script_path}")
-        return True
+    def execute(self, script_path: Path | str) -> bool:
+        ret = subprocess.run(["python", str(script_path)], capture_output=True)
+        return ret.returncode == 0
 
 
 if __name__ == "__main__":
