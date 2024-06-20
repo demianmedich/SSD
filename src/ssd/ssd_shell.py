@@ -14,7 +14,7 @@ class SsdShell(cmd.Cmd):
     def __init__(self, ctrl: Shell):
         super().__init__()
         self.ssd_ctrl = ctrl
-        self.LOG = Logger()
+        self.logger = Logger()
 
     def do_erase(self, args):
         try:
@@ -78,7 +78,7 @@ class SsdShell(cmd.Cmd):
 
     def default(self, line):
         """Handle invalid commands"""
-        self.LOG.print("INVALID COMMAND")
+        self.logger.print("INVALID COMMAND")
 
     def emptyline(self):
         pass

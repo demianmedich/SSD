@@ -16,34 +16,34 @@ class SsdTestShellApp(cmd.Cmd):
 
     def __init__(self):
         super().__init__()
-        self.LOG = Logger()
+        self.logger = Logger()
 
     def do_read(self, args):
-        self.LOG.print("read!")
+        self.logger.print("read!")
 
     def do_write(self, args):
-        self.LOG.print("Write!")
+        self.logger.print("Write!")
 
     def do_exit(self, args):
         return True
 
     def do_help(self, args):
-        self.LOG.print("HELp!")
+        self.logger.print("HELp!")
 
     def do_fullread(self, args):
-        self.LOG.print("FULLREAD")
+        self.logger.print("FULLREAD")
 
     def do_fullwrite(self, args):
-        self.LOG.print("FULLWRITE")
+        self.logger.print("FULLWRITE")
 
     def do_erase(self, args):
-        self.LOG.print("ERASE!")
+        self.logger.print("ERASE!")
 
     def do_flush(self, args):
-        self.LOG.print("FLUSH!")
+        self.logger.print("FLUSH!")
 
     def default(self, line):
-        self.LOG.print("INVALID COMMAND")
+        self.logger.print("INVALID COMMAND")
 
     def emptyline(self):
         pass

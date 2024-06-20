@@ -46,7 +46,7 @@ class ScriptManager:
 
 if __name__ == "__main__":
     # just for test
-    LOG = Logger()
+    logger = Logger()
     sm = ScriptManager()
-    LOG.print(sm.script_dir)
-    LOG.print(sm.script_dir.exists())
+    logger.print(sm.script_dir)
+    logger.print(sm.script_dir.exists())
