@@ -2,11 +2,13 @@
 from pathlib import Path
 
 from src.ssd.core.base import SSDInterface
+from ssd.core.buffer import CommandBuffer
 
 DEFAULT_VALUE = 0x00000000
 
 RESULT_FILE = "result.txt"
 NAND_FILE = "nand.txt"
+BUFFER_TXT = "buffer.txt"
 
 
 class VirtualSSD(SSDInterface):
@@ -15,6 +17,7 @@ class VirtualSSD(SSDInterface):
 
     def __init__(self, rootdir: str | Path = Path.cwd()):
         self.set_rootdir(rootdir)
+        self._buffer = CommandBuffer(self, rootdir)
 
     def set_rootdir(self, rootdir: str | Path):
         rootdir = Path(rootdir)
@@ -49,16 +52,20 @@ class VirtualSSD(SSDInterface):
             self.result_file.write_text(f"0x{DEFAULT_VALUE:08X}")
             return
 
-        with open(self.nand_file, mode="rt", encoding="utf-8", newline="\n") as f:
-            f.seek(len(f.readline()) * addr)
-            data = f.readline().split()[-1].strip()
-
-        self.result_file.write_text(data)
+        try:
+            data = self._buffer.read(addr)
+        except ValueError:
+            with open(self.nand_file, mode="rt", encoding="utf-8", newline="\n") as f:
+                f.seek(len(f.readline()) * addr)
+                data = f.readline().split()[-1].strip()
+        finally:
+            self.result_file.write_text(data)
 
     def write(self, addr: int, data: int):
-        with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
-            f.seek(len(f.readline()) * addr)
-            f.write(self.data_format(addr, data))
+        self._buffer.write(f"W {addr} 0x{data:08X}")
+        # with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
+        #     f.seek(len(f.readline()) * addr)
+        #     f.write(self.data_format(addr, data))
 
     def erase(self, addr: int, size: int):
         if not ((0 < size <= 10) and (addr + size <= 100) and (0 <= addr)):
