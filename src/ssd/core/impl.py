@@ -52,5 +52,11 @@ class VirtualSSD(SSDInterface):
             f.seek(len(f.readline()) * addr)
             f.write(self.data_format(addr, data))
 
+    def erase(self, addr: int, size: int):
+        pass
+
+    def erase_range(self, start_addr: int, end_addr: int):
+        pass
+
     def data_format(self, addr: int, data: int) -> str:
         return f"{addr:02}\t0x{data:08X}\n"
