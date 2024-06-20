@@ -10,13 +10,19 @@ class Logger:
             cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
 
+    def save_log(self, log):
+        with open("latest.log", "a") as file:
+            file.write(log + "\n")
+
     def print(self, message):
         current_time = datetime.datetime.now().strftime("[%Y.%m.%d %H:%M:%S]")
         len_function = 30
         call = inspect.stack()[1]
         function_name = call.function
         function_name = function_name[:len_function]
-        print(f"{current_time} {function_name.center(len_function)+'()'} : {message}")
+        log = f"{current_time} {function_name.center(len_function)+'()'} : {message}"
+        self.save_log(log)
+        print(log)
 
 
 def test_qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq():
