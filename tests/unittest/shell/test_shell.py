@@ -4,7 +4,7 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from src.ssd.shell import ReadResultAccessor, Shell
+from ssd.shell.shell import ReadResultAccessor, Shell
 
 ADDRESS = 3
 VALUE = "0xAAAABBBB"
