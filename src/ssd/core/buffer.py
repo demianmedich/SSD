@@ -13,7 +13,8 @@ class CommandBuffer:
         self._buffer_txt_path = rootdir / BUFFER_TXT
         self._ssd = ssd
 
-        self._make_initial_buffer()
+        if not self._buffer_txt_path.exists():
+            self._make_initial_buffer()
 
     def flush(self) -> None:
         cmds = self._read_commands_buffer_txt()
@@ -70,7 +71,7 @@ class CommandBuffer:
         # return cmds
 
     def _make_initial_buffer(self):
-        with open(self._buffer_txt_path, mode="a+", encoding="utf-8", newline="\n"):
+        with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
             pass
 
     def _optimize_commands(self, commands: list[str]):
