@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 from ssd.shell.app.cli import SsdTestShellApp
 
 
-class TestSsdShell(unittest.TestCase):
+class TestSsdShellApp(unittest.TestCase):
     def setUp(self):
         self.mk = Mock()
         self.sut = SsdTestShellApp(self.mk)

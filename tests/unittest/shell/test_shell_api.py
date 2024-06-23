@@ -10,7 +10,7 @@ ADDRESS = 3
 VALUE = "0xAAAABBBB"
 
 
-class ShellTestCase(unittest.TestCase):
+class TestShellAPI(unittest.TestCase):
     def setUp(self):
         self.mk = Mock()
         self.sut = Shell(self.mk)
