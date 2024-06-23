@@ -2,16 +2,16 @@ import os
 import sys
 from pathlib import Path
 
+from ssd.shell.api import ResultReader, Shell
 from ssd.shell.app.cli import SsdTestShellApp
 from ssd.shell.app.runner import SsdTestRunnerApp
-from ssd.shell.shell import ReadResultAccessor, Shell
 from ssd.util.logger import Logger
 
 
 def main():
     logger = Logger()
     if len(sys.argv) == 1:
-        SsdTestShellApp(Shell(ReadResultAccessor(Path(os.getcwd())))).cmdloop()
+        SsdTestShellApp(Shell(ResultReader(Path(os.getcwd())))).cmdloop()
     elif len(sys.argv) == 2:
         SsdTestRunnerApp().execute_runlist(sys.argv[1])
     else:

@@ -9,8 +9,8 @@ import cmd
 import os
 from pathlib import Path
 
-from ssd.shell.app.util import ScriptManager
-from ssd.shell.shell import ReadResultAccessor, Shell
+from ssd.shell.api import ResultReader, Shell
+from ssd.shell.app.script_manager import ScriptManager
 from ssd.util.logger import Logger
 
 
@@ -99,5 +99,5 @@ class SsdTestShellApp(cmd.Cmd):
 
 
 if __name__ == "__main__":
-    app = SsdTestShellApp(Shell(ReadResultAccessor(Path(os.getcwd()))))
+    app = SsdTestShellApp(Shell(ResultReader(Path(os.getcwd()))))
     app.cmdloop()

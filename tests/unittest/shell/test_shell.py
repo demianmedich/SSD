@@ -4,7 +4,7 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from ssd.shell.shell import ReadResultAccessor, Shell
+from ssd.shell.api import ResultReader, Shell
 
 ADDRESS = 3
 VALUE = "0xAAAABBBB"
@@ -38,7 +38,7 @@ class ShellTestCase(unittest.TestCase):
 
     def test_full_write_real(self):
         test_value = "0xFFFFFFFF"
-        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real = Shell(ResultReader(Path(os.getcwd())))
         real.fullwrite(test_value)
         self.assertEqual(test_value, real.read(address=55))
 
@@ -51,24 +51,24 @@ class ShellTestCase(unittest.TestCase):
 
     def test_write_outofaddr(self):
         test_lba = -1
-        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real = Shell(ResultReader(Path(os.getcwd())))
         self.assertFalse(real.write(test_lba, "0xFFFFFFFF"))
 
     def test_write_outofvalue(self):
         test_lba = 10
         test_value = "FFFFF"
-        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real = Shell(ResultReader(Path(os.getcwd())))
         self.assertFalse(real.write(test_lba, test_value))
 
     def test_write_outofvalue_second(self):
         test_lba = 10
         test_value = "FFFFFFFFFF"
-        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real = Shell(ResultReader(Path(os.getcwd())))
         self.assertFalse(real.write(test_lba, test_value))
 
     def test_fullwrite_outofvalue(self):
         test_value = "FFFFF"
-        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real = Shell(ResultReader(Path(os.getcwd())))
         self.assertFalse(real.fullwrite(test_value))
 
     def test_full_read_once(self):
@@ -101,7 +101,7 @@ class ShellTestCase(unittest.TestCase):
 
     def test_testapp1_success(self):
         test_value = "0xAAAAAAAA"
-        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real = Shell(ResultReader(Path(os.getcwd())))
         real.testapp1()
         self.assertEqual(test_value, real.read(address=55))
 
@@ -112,7 +112,7 @@ class ShellTestCase(unittest.TestCase):
 
     def test_testapp2_success(self):
         test_value = "0x12345678"
-        real = Shell(ReadResultAccessor(Path(os.getcwd())))
+        real = Shell(ResultReader(Path(os.getcwd())))
         real.testapp2()
         self.assertEqual(test_value, real.read(address=0))
 
