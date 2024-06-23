@@ -1,7 +1,7 @@
 # coding=utf-8
 from pathlib import Path
 
-from src.ssd.driver.base import SSDInterface
+from ssd.driver.base import SSDInterface
 from ssd.driver.buffer import CommandBuffer
 
 DEFAULT_VALUE = 0x00000000

@@ -5,7 +5,7 @@ from pathlib import Path
 from ssd.util.logger import Logger
 
 
-class ReadResultAccessor:
+class ResultReader:
     def __init__(self, dir_path: Path):
         self.dir_path = dir_path
         self.result_path = dir_path / "result.txt"
@@ -33,8 +33,8 @@ class Shell:
         f"\tfullread"
     )
 
-    def __init__(self, read_result_accessor: ReadResultAccessor):
-        self.read_result_accessor = read_result_accessor
+    def __init__(self, result_reader: ResultReader):
+        self.result_reader = result_reader
         self.__min_lba = 0
         self.__max_lba = 99
         self.logger = Logger()
@@ -65,7 +65,7 @@ class Shell:
             return ""
 
         os.system(f"python -m ssd R {address}")
-        read_result = self.read_result_accessor.fetch_read_result()
+        read_result = self.result_reader.fetch_read_result()
         self.logger.print(read_result)
         return read_result
 

@@ -1,20 +1,28 @@
+"""
+TODO
+    1. Command 패턴 적용?
+    - 모든 명령 default 에서 관리
+    - 모든 에러 catch 해서 print
+"""
+
 import cmd
 import os
 from pathlib import Path
 
-from ssd.shell.shell import ReadResultAccessor, Shell
+from ssd.shell.api import ResultReader, Shell
+from ssd.shell.app.script_manager import ScriptManager
 from ssd.util.logger import Logger
 
-# TODO: 얘를 shell로 바꾸고 기존 shell.py는 control.py 등으로 변경
 
-
-class SsdShell(cmd.Cmd):
+class SsdTestShellApp(cmd.Cmd):
+    intro = "Welcome to the SSD Test Shell. Type help to list commands.\n"
     prompt = "> "
 
     def __init__(self, ctrl: Shell):
         super().__init__()
         self.ssd_ctrl = ctrl
         self.logger = Logger()
+        self._script_manager = ScriptManager()
 
     def do_erase(self, args):
         try:
@@ -70,20 +78,26 @@ class SsdShell(cmd.Cmd):
         except ValueError:
             self.ssd_ctrl.help()
 
-    def do_testapp1(self, args):
-        self.ssd_ctrl.testapp1()
+    def do_flush(self, args):
+        self.logger.print("추가 필요 해요")  # TODO
 
-    def do_testapp2(self, args):
-        self.ssd_ctrl.testapp2()
+    def default(self, args: str):
+        try:
+            script_path = self._script_manager.find(args)
+        except FileNotFoundError:
+            self.logger.print("INVALID COMMAND")
+            return
 
-    def default(self, line):
-        """Handle invalid commands"""
-        self.logger.print("INVALID COMMAND")
+        try:
+            ret = self._script_manager.execute(script_path)
+            self.logger.print("Pass" if ret else "Fail")
+        except Exception as e:
+            self.logger.print(e)
 
     def emptyline(self):
         pass
 
 
 if __name__ == "__main__":
-    app = SsdShell(Shell(ReadResultAccessor(Path(os.getcwd()))))
+    app = SsdTestShellApp(Shell(ResultReader(Path(os.getcwd()))))
     app.cmdloop()
