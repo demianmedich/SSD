@@ -46,7 +46,7 @@ class Shell:
         self.logger = Logger()
 
     def is_valid(self, address, value):
-        if self.__min_lba > address or address > self.__max_lba:
+        if not self._is_valid_address(address):
             return False
 
         if (
@@ -57,6 +57,9 @@ class Shell:
             return True
 
         return False
+
+    def _is_valid_address(self, address):
+        return self.__min_lba <= address <= self.__max_lba
 
     def write(self, address: int, value: str):
         if not self.is_valid(address, value):
@@ -89,10 +92,6 @@ class Shell:
     def erase_range(self, start_address: int, end_address: int):
         self.erase(start_address, end_address - start_address)
 
-    @staticmethod
-    def _is_valid_address(address):
-        return 0 <= address <= 99
-
     def help(self):
         print(self.HELP_MESSAGE)
 
@@ -109,33 +108,6 @@ class Shell:
         for lba in range(self.__min_lba, self.__max_lba + 1):
             result.append(self.read(lba))
         return result
-
-    def testapp1(self):  # TODO: remove this
-        test_value = "0xAAAAAAAA"
-        self.fullwrite(test_value)
-        data = self.fullread()
-        for i in range(len(data)):
-            if data[i] != test_value:
-                self.logger.print("Fail")
-                return
-        self.logger.print("Success")
-
-    def testapp2(self):  # TODO: remove this
-        test_value1 = "0xAAAABBBB"
-        test_value2 = "0x12345678"
-        for _ in range(30):
-            for lba in range(6):
-                self.write(lba, test_value1)
-
-        for lba in range(6):
-            self.write(lba, test_value2)
-
-        for lba in range(6):
-            data = self.read(lba)
-            if data != test_value2:
-                self.logger.print("Fail")
-                return
-        self.logger.print("Success")
 
     def flush(self):
         os.system(f"python -m ssd F")
