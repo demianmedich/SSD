@@ -1,5 +1,7 @@
 from ssd.shell.api import Shell
 from ssd.shell.cmd.base import IShellCommand
+from ssd.shell.cmd.erase import EraseCommand
+from ssd.shell.cmd.erase_range import EraseRangeCommand
 from ssd.shell.cmd.full_read import FullReadCommand
 from ssd.shell.cmd.full_write import FullWriteCommand
 from ssd.shell.cmd.read import ReadCommand
@@ -14,6 +16,8 @@ class ShellCommandFactory:
             "write": WriteCommand,
             "fullread": FullReadCommand,
             "fullwrite": FullWriteCommand,
+            "erase": EraseCommand,
+            "erase_range": EraseRangeCommand,
             # TODO
         }
 
