@@ -136,35 +136,36 @@ class CommandBuffer:
 
     def _optimize_commands(self, commands: list[str]):
         i = len(commands) - 1
-        while i < len(commands):
+        # while i < len(commands):
+        while i >= 0:
             ref_commands = commands.copy()
-            j = 0
-            while j < i:
+            j = i - 1
+            while j >= 0:
+                i_opcode = self._extract_opcode_from_cmd(commands[i])
+                j_opcode = self._extract_opcode_from_cmd(commands[j])
                 # i is later, j is older
-                if self._extract_opcode_from_cmd(commands[j]) == "W":
-                    commands[i], older_cmd = self._merge_write_cmd(
-                        commands[i], commands.pop(j)
+                if j_opcode == "W":
+                    commands[i], commands[j] = self._merge_write_cmd(
+                        commands[i], commands[j]
                     )
-                    if older_cmd:
-                        commands.insert(j, older_cmd)
-                    else:
+                    if commands[j] is None:
+                        commands.pop(j)
                         break
 
-                if self._extract_opcode_from_cmd(commands[j]) == "E":
-                    if self._extract_opcode_from_cmd(commands[i]) == "E":
-                        later_cmd, commands[j] = self._merge_erase_cmds(
-                            commands.pop(i), commands[j]
+                if j_opcode == "E":
+                    if i_opcode == "E":
+                        commands[i], commands[j] = self._merge_erase_cmds(
+                            commands[i], commands[j]
                         )
-                        if later_cmd:
-                            commands.insert(i, later_cmd)
-                        else:
+                        if commands[i] is None:
+                            commands.pop(i)
                             break
 
-                    elif self._extract_opcode_from_cmd(commands[i]) == "W":
+                    elif i_opcode == "W":
                         for _ in self._split_erase_cmds(commands[i], commands.pop(j)):
                             commands.insert(j, _)
 
-                j += 1
+                j -= 1
 
-            i = i + 1 if ref_commands == commands else 1
+            i = i - 1 if ref_commands == commands else (len(commands) - 1)
         return commands
