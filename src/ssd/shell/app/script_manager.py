@@ -1,3 +1,4 @@
+import os
 import subprocess
 from pathlib import Path
 
@@ -5,7 +6,7 @@ from ssd.util.logger import Logger
 
 
 class ScriptManager:
-
+    root_dir = Path(Logger.find_git_root()).joinpath("src")
     script_dir = Path(Logger.find_git_root()).joinpath("src/script")
 
     def find(self, script_name: str) -> Path:
@@ -30,9 +31,10 @@ class ScriptManager:
 
         return script_paths
 
-    @staticmethod
-    def execute(script_path: Path | str) -> bool:
-        ret = subprocess.run(["python", str(script_path)], capture_output=True)
+    def execute(self, script_path: Path | str) -> bool:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(self.root_dir)
+        ret = subprocess.run(["python", str(script_path)], env=env, capture_output=True)
         return ret.returncode == 0
 
 
