@@ -89,9 +89,6 @@ class Shell:
     def erase_range(self, start_address: int, end_address: int):
         self.erase(start_address, end_address - start_address)
 
-    def flush(self):
-        os.system(f"python -m ssd F")
-
     @staticmethod
     def _is_valid_address(address):
         return 0 <= address <= 99
