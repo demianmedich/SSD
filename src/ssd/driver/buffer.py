@@ -115,20 +115,18 @@ class CommandBuffer:
         older_size = self._extract_size_from_cmd(older_cmd)
         later_addr = self._extract_addr_from_cmd(later_cmd)
 
+        if not (older_addr <= later_addr < older_addr + older_size):
+            return None
+
         cmds = []
-
-        if older_addr <= later_addr < older_addr + older_size:
-            j = list(range(older_addr, older_addr + older_size)).index(later_addr)
-            if j == 0:
-                cmds.append(f"E {older_addr + 1} {older_size - 1}")
-            elif j == older_size:
-                cmds.append(f"E {older_addr} {older_size - 1}")
-            else:
-                cmds.append(f"E {older_addr} {j}")
-                cmds.append(f"E {later_addr + 1} {older_size - j - 1}")
-
+        j = list(range(older_addr, older_addr + older_size)).index(later_addr)
+        if j == 0:
+            cmds.append(f"E {older_addr + 1} {older_size - 1}")
+        elif j == older_size:
+            cmds.append(f"E {older_addr} {older_size - 1}")
         else:
-            cmds.append(older_cmd)
+            cmds.append(f"E {older_addr} {j}")
+            cmds.append(f"E {later_addr + 1} {older_size - j - 1}")
 
         cmds.reverse()
 
@@ -136,35 +134,36 @@ class CommandBuffer:
 
     def _optimize_commands(self, commands: list[str]):
         i = len(commands) - 1
-        while i < len(commands):
+
+        while i >= 0:
+            i_opcode = self._extract_opcode_from_cmd(commands[i])
             ref_commands = commands.copy()
-            j = 0
-            while j < i:
+
+            j = i - 1
+            while j >= 0:
+                j_opcode = self._extract_opcode_from_cmd(commands[j])
                 # i is later, j is older
-                if self._extract_opcode_from_cmd(commands[j]) == "W":
-                    commands[i], older_cmd = self._merge_write_cmd(
-                        commands[i], commands.pop(j)
-                    )
-                    if older_cmd:
-                        commands.insert(j, older_cmd)
-                    else:
+                if j_opcode == "W":
+                    commands[i], _ = self._merge_write_cmd(commands[i], commands[j])
+                    if _ is None:
+                        commands.pop(j)
                         break
 
-                if self._extract_opcode_from_cmd(commands[j]) == "E":
-                    if self._extract_opcode_from_cmd(commands[i]) == "E":
-                        later_cmd, commands[j] = self._merge_erase_cmds(
-                            commands.pop(i), commands[j]
-                        )
-                        if later_cmd:
-                            commands.insert(i, later_cmd)
-                        else:
-                            break
+                if j_opcode == "E" and i_opcode == "E":
+                    _, commands[j] = self._merge_erase_cmds(commands[i], commands[j])
+                    if _ is None:
+                        commands.pop(i)
+                        break
 
-                    elif self._extract_opcode_from_cmd(commands[i]) == "W":
-                        for _ in self._split_erase_cmds(commands[i], commands.pop(j)):
+                if j_opcode == "E" and i_opcode == "W":
+                    split_cmd = self._split_erase_cmds(commands[i], commands[j])
+                    if split_cmd is not None:
+                        commands.pop(j)
+                        for _ in split_cmd:
                             commands.insert(j, _)
+                        break
 
-                j += 1
+                j -= 1
 
-            i = i + 1 if ref_commands == commands else 1
+            i = i - 1 if ref_commands == commands else (len(commands) - 1)
         return commands
