@@ -82,9 +82,23 @@ class CommandBuffer:
         return commands.split()[0]
 
     def _merge_erase_commands(self, cmd1, cmd2):
-        addr1, size1 = (int(_) for _ in cmd1.split()[1:])
-        addr2, size2 = (int(_) for _ in cmd2.split()[1:])
-        return f"E {min(addr1, addr2)} {max(addr1 + size1, addr2 + size2) - min(addr1, addr2)}"
+        # cmd1 is older, cmd2 is later
+        o_addr, o_size = self._extract_addr_from_cmd(cmd1), self._extract_size_from_cmd(
+            cmd1
+        )
+        l_addr, l_size = self._extract_addr_from_cmd(cmd2), self._extract_size_from_cmd(
+            cmd2
+        )
+
+        if l_addr in range(o_addr, o_addr + o_size + 1) or o_addr in range(
+            l_addr, l_addr + l_size + 1
+        ):
+            new_addr = min(l_addr, o_addr)
+            new_size = max(l_addr + l_size, o_addr + o_size) - new_addr
+            if new_size <= 10:
+                return f"E {new_addr} {new_size}", None
+
+        return cmd1, cmd2
 
     def _split_erase_commands(self, cand: list):
         cmds = []
@@ -108,7 +122,7 @@ class CommandBuffer:
 
     def _optimize_commands(self, commands: list[str]):
         i = len(commands) - 1
-        while i > 0:
+        while i < len(commands):
             j = 0
             while j < i:
                 if self._extract_opcode_from_cmd(commands[i]) == "W":
@@ -118,34 +132,23 @@ class CommandBuffer:
                         addr = self._extract_addr_from_cmd(commands[j])
                         if addr == i_addr:
                             del commands[i]
-                            i = 1
+                            i = 0
 
                     if self._extract_opcode_from_cmd(commands[j]) == "E":
                         addr = self._extract_addr_from_cmd(commands[j])
                         size = self._extract_size_from_cmd(commands[j])
                         if addr <= i_addr < addr + size:
                             del commands[i]
-                            i = 1
+                            i = 0
 
                 if self._extract_opcode_from_cmd(commands[i]) == "E":
-                    i_addr = self._extract_addr_from_cmd(commands[j])
-                    i_size = self._extract_size_from_cmd(commands[j])
+                    i_addr = self._extract_addr_from_cmd(commands[i])
+                    i_size = self._extract_size_from_cmd(commands[i])
 
                     if self._extract_opcode_from_cmd(commands[j]) == "E":
-                        addr = self._extract_addr_from_cmd(commands[j])
-                        size = self._extract_size_from_cmd(commands[j])
-                        if (i_addr <= addr <= i_addr + i_size) or (
-                            addr <= i_addr <= addr + size
-                        ):
-                            if (
-                                max(addr + size, i_addr + i_size) - min(addr, i_addr)
-                                <= 10
-                            ):
-                                commands[i] = self._merge_erase_commands(
-                                    commands[i], commands[j]
-                                )
-                                del commands[j]
-                                i = 1
+                        commands[i], commands[j] = self._merge_erase_commands(
+                            commands[i], commands[j]
+                        )
 
                     if self._extract_opcode_from_cmd(commands[j]) == "W":
                         addr = self._extract_addr_from_cmd(commands[j])
@@ -156,6 +159,6 @@ class CommandBuffer:
 
                             for _ in self._split_erase_commands(candidate)[::-1]:
                                 commands.insert(i, _)
-                            i = 1
-
+                            i = 0
+            i += 1
         return commands
