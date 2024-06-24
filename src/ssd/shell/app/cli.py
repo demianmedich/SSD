@@ -11,6 +11,7 @@ from pathlib import Path
 
 from ssd.shell.api import ResultReader, Shell
 from ssd.shell.app.script_manager import ScriptManager
+from ssd.shell.cmd.factory import ShellCommandFactory
 from ssd.util.logger import Logger
 
 
@@ -22,43 +23,8 @@ class SsdTestShellApp(cmd.Cmd):
         super().__init__()
         self.ssd_ctrl = ctrl
         self.logger = Logger()
+        self._cmd_factory = ShellCommandFactory(api=self.ssd_ctrl)
         self._script_manager = ScriptManager()
-
-    def do_erase(self, args):
-        try:
-            args = args.split()
-            if len(args) != 2:
-                raise ValueError
-            self.ssd_ctrl.erase(int(args[0]), int(args[1]))
-        except ValueError:
-            self.ssd_ctrl.help()
-
-    def do_erase_range(self, args):
-        try:
-            args = args.split()
-            if len(args) != 2:
-                raise ValueError
-            self.ssd_ctrl.erase_range(int(args[0]), int(args[1]))
-        except ValueError:
-            self.ssd_ctrl.help()
-
-    def do_read(self, args):
-        try:
-            args = args.split()
-            if len(args) != 1:
-                raise ValueError
-            self.ssd_ctrl.read(int(args[0]))
-        except ValueError:
-            self.ssd_ctrl.help()
-
-    def do_write(self, args):
-        try:
-            args = args.split()
-            if len(args) != 2:
-                raise ValueError
-            self.ssd_ctrl.write(int(args[0]), args[1])
-        except ValueError:
-            self.ssd_ctrl.help()
 
     def do_exit(self, args):
         return True
@@ -66,22 +32,14 @@ class SsdTestShellApp(cmd.Cmd):
     def do_help(self, args):
         self.ssd_ctrl.help()
 
-    def do_fullread(self, args):
-        self.ssd_ctrl.fullread()
-
-    def do_fullwrite(self, args):
-        try:
-            args = args.split()
-            if len(args) != 1:
-                raise ValueError
-            self.ssd_ctrl.fullwrite(args[0])
-        except ValueError:
-            self.ssd_ctrl.help()
-
-    def do_flush(self, args):
-        self.logger.print("추가 필요 해요")  # TODO
-
     def default(self, args: str):
+        try:
+            cmd_object = self._cmd_factory.parse(args)
+            cmd_object.execute()
+            return
+        except ValueError:
+            pass
+
         try:
             script_path = self._script_manager.find(args)
         except FileNotFoundError:
