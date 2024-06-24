@@ -27,15 +27,15 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
             self._make_initial_buffer()
 
     def read(self, addr: int) -> None:
-        value_or_cnt = self._check_in_buffer(addr)
-        if value_or_cnt is None:
-            self._ssd.read(addr)
-            return
-        if value_or_cnt == 0:
+        opcode, value_or_cnt = self._check_in_buffer(addr)
+        if opcode == "E":
             self._result_txt_path.write_text("0x00000000")
             return
+        if opcode == "W":
+            self._result_txt_path.write_text(value_or_cnt)
+            return
 
-        self._result_txt_path.write_text(value_or_cnt)
+        self._ssd.read(addr)
         return
 
     def write(self, addr: int, data: int):
@@ -46,16 +46,17 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
 
     def _check_in_buffer(self, addr):
         for _ in self._read_commands_buffer_txt()[::-1]:
-            if self._extract_opcode_from_cmd(_) == "W":
+            opcode = self._extract_opcode_from_cmd(_)
+            if opcode == "W":
                 if addr == self._extract_addr_from_cmd(_):
-                    return _.split()[-1]
-            if self._extract_opcode_from_cmd(_) == "E":
+                    return opcode, _.split()[-1]
+            if opcode == "E":
                 if addr in range(
                     self._extract_addr_from_cmd(_),
                     self._extract_addr_from_cmd(_) + self._extract_size_from_cmd(_),
                 ):
-                    return 0
-        return None
+                    return opcode, 0
+        return None, None
 
     def _buffer_command(self, cmd):
         commands = self._read_commands_buffer_txt()
