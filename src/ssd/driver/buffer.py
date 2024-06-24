@@ -111,9 +111,8 @@ class CommandBuffer:
         while i > 0:
             j = 0
             while j < i:
-                if commands[i].startswith("E"):
-                    if self._extract_opcode_from_cmd(commands[i]) == "W":
-                        i_addr = self._extract_addr_from_cmd(commands[i])
+                if self._extract_opcode_from_cmd(commands[i]) == "W":
+                    i_addr = self._extract_addr_from_cmd(commands[i])
 
                     if self._extract_opcode_from_cmd(commands[j]) == "W":
                         addr = self._extract_addr_from_cmd(commands[j])
@@ -128,22 +127,25 @@ class CommandBuffer:
                             del commands[i]
                             i = 1
 
-                    if self._extract_opcode_from_cmd(commands[i]) == "E":
-                        i_addr = self._extract_addr_from_cmd(commands[j])
-                        i_size = self._extract_size_from_cmd(commands[j])
+                if self._extract_opcode_from_cmd(commands[i]) == "E":
+                    i_addr = self._extract_addr_from_cmd(commands[j])
+                    i_size = self._extract_size_from_cmd(commands[j])
 
                     if self._extract_opcode_from_cmd(commands[j]) == "E":
                         addr = self._extract_addr_from_cmd(commands[j])
                         size = self._extract_size_from_cmd(commands[j])
-                    if (i_addr <= addr <= i_addr + i_size) or (
-                        addr <= i_addr <= addr + size
-                    ):
-                        if max(addr + size, i_addr + i_size) - min(addr, i_addr) <= 10:
-                            commands[i] = self._merge_erase_commands(
-                                commands[i], commands[j]
-                            )
-                            del commands[j]
-                            i = 1
+                        if (i_addr <= addr <= i_addr + i_size) or (
+                            addr <= i_addr <= addr + size
+                        ):
+                            if (
+                                max(addr + size, i_addr + i_size) - min(addr, i_addr)
+                                <= 10
+                            ):
+                                commands[i] = self._merge_erase_commands(
+                                    commands[i], commands[j]
+                                )
+                                del commands[j]
+                                i = 1
 
                     if self._extract_opcode_from_cmd(commands[j]) == "W":
                         addr = self._extract_addr_from_cmd(commands[j])
