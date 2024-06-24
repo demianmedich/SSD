@@ -10,6 +10,8 @@ from ssd.driver.virtual import VirtualSSD
 def get_args() -> (str, int, int):
     try:
         cmd = sys.argv[1].upper()
+        if cmd == "F":
+            return cmd, None, None
         addr = int(sys.argv[2])
         if cmd == "R":
             return cmd, addr, None
@@ -17,8 +19,6 @@ def get_args() -> (str, int, int):
             return cmd, addr, int(sys.argv[3], 16)
         if cmd == "E":
             return cmd, addr, int(sys.argv[3])
-        if cmd == "F":
-            return cmd, None, None
     except IndexError:
         return None, None, None
 
