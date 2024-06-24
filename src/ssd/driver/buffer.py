@@ -120,7 +120,7 @@ class CommandBuffer:
         if older_addr <= later_addr < older_addr + older_size:
             j = list(range(older_addr, older_addr + older_size)).index(later_addr)
             if j == 0:
-                cmds.append(f"E {later_addr} {older_size - 1}")
+                cmds.append(f"E {older_addr + 1} {older_size - 1}")
             elif j == older_size:
                 cmds.append(f"E {older_addr} {older_size - 1}")
             else:
