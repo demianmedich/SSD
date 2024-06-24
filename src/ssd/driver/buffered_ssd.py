@@ -52,18 +52,15 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
     def _buffer_command(self, cmd):
         commands = self._read_commands_buffer_txt()
         commands.append(cmd)
-        changed = self._optimize_commands(commands)
-        if changed:
-            with open(
-                self._buffer_txt_path, mode="wt", encoding="utf-8", newline="\n"
-            ) as f:
-                f.writelines(f"{cmd}\n" for cmd in commands)
-        else:
-            with open(
-                self._buffer_txt_path, mode="r+", encoding="utf-8", newline="\n"
-            ) as f:
-                f.seek(0, os.SEEK_END)
-                f.write(f"{cmd}\n")
+        commands = self._optimize_commands(commands)
+
+        with open(
+            self._buffer_txt_path, mode="wt", encoding="utf-8", newline="\n"
+        ) as f:
+            f.writelines(f"{cmd}\n" for cmd in self._optimize_commands(commands))
+
+        if len(commands) > 10:
+            self.flush()
 
     def flush(self) -> None:
         cmds = self._read_commands_buffer_txt()
