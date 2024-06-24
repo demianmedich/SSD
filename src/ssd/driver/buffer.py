@@ -94,7 +94,7 @@ class CommandBuffer:
 
         return later_cmd, older_cmd
 
-    def _merge_erase_cmds(self, later_cmd, older_cmd):
+    def _merge_erase_cmd(self, later_cmd, older_cmd):
         older_addr = self._extract_addr_from_cmd(older_cmd)
         older_size = self._extract_size_from_cmd(older_cmd)
         later_addr = self._extract_addr_from_cmd(later_cmd)
@@ -110,7 +110,7 @@ class CommandBuffer:
 
         return later_cmd, older_cmd
 
-    def _split_erase_cmds(self, later_cmd, older_cmd):
+    def _split_erase_cmd(self, later_cmd, older_cmd):
         older_addr = self._extract_addr_from_cmd(older_cmd)
         older_size = self._extract_size_from_cmd(older_cmd)
         later_addr = self._extract_addr_from_cmd(later_cmd)
@@ -150,13 +150,13 @@ class CommandBuffer:
                         break
 
                 if j_opcode == "E" and i_opcode == "E":
-                    _, commands[j] = self._merge_erase_cmds(commands[i], commands[j])
+                    _, commands[j] = self._merge_erase_cmd(commands[i], commands[j])
                     if _ is None:
                         commands.pop(i)
                         break
 
                 if j_opcode == "E" and i_opcode == "W":
-                    split_cmd = self._split_erase_cmds(commands[i], commands[j])
+                    split_cmd = self._split_erase_cmd(commands[i], commands[j])
                     if split_cmd is not None:
                         commands.pop(j)
                         for _ in split_cmd:
