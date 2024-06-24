@@ -1,14 +1,22 @@
+from abc import ABC, abstractmethod
 from pathlib import Path
 
-from ssd.driver.base import SSDInterface
+from ssd.driver.erasable_ssd import ErasableSSDInterface
 
 NAND_FILE = "nand.txt"
 BUFFER_TXT = "buffer.txt"
 RESULT_FILE = "result.txt"
 
 
-class CommandBufferedDecorator(SSDInterface):
-    def __init__(self, ssd: SSDInterface, rootdir: str | Path = Path.cwd()):
+class CommandBufferedSSDInterface(ErasableSSDInterface, ABC):
+
+    @abstractmethod
+    def flush(self) -> None:
+        raise NotImplementedError()
+
+
+class CommandBufferedSSD(CommandBufferedSSDInterface):
+    def __init__(self, ssd: ErasableSSDInterface, rootdir: str | Path = Path.cwd()):
         self.rootdir = Path(rootdir)
         self._buffer_txt_path = self.rootdir / BUFFER_TXT
         self._result_txt_path = self.rootdir / RESULT_FILE

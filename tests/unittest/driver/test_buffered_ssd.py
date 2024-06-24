@@ -2,11 +2,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ssd.driver.buffered_decorator import CommandBufferedDecorator
+from ssd.driver.buffered_ssd import CommandBufferedSSD
+from ssd.driver.erasable_ssd import ErasableVirtualSSD
 from ssd.driver.virtual import VirtualSSD
 
 
-class BufferedDecoratorTestCase(unittest.TestCase):
+class BufferedSSDTestCase(unittest.TestCase):
 
     def read_from_result_file(self, rootdir: Path) -> int:
         return int((rootdir / "result.txt").read_text(), 16)
@@ -24,7 +25,9 @@ class BufferedDecoratorTestCase(unittest.TestCase):
     def test_write_read(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            ssd = CommandBufferedDecorator(VirtualSSD(tmpdir), tmpdir)
+            ssd = CommandBufferedSSD(
+                ErasableVirtualSSD(VirtualSSD(rootdir=tmpdir)), rootdir=tmpdir
+            )
 
             addr = 0
             expected = 0x11111111

@@ -5,6 +5,8 @@ from contextlib import contextmanager
 from io import StringIO
 from pathlib import Path
 
+from ssd.driver.buffered_ssd import CommandBufferedSSD
+from ssd.driver.erasable_ssd import ErasableVirtualSSD
 from ssd.driver.range_valid_decorator import RangeValidationDecorator
 from ssd.driver.virtual import VirtualSSD
 
@@ -30,7 +32,11 @@ class RangeValidationDecoratorTestCase(unittest.TestCase):
     def test_read_do_print_help(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            ssd = RangeValidationDecorator(VirtualSSD(tmpdir))
+            ssd = RangeValidationDecorator(
+                CommandBufferedSSD(
+                    ErasableVirtualSSD(VirtualSSD(rootdir=tmpdir)), rootdir=tmpdir
+                )
+            )
 
             help_msg = ssd.help_message.strip()
             self.assert_equal_read_print_help_message(-1, help_msg, ssd)
@@ -44,7 +50,11 @@ class RangeValidationDecoratorTestCase(unittest.TestCase):
     def test_write_do_print_help(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            ssd = RangeValidationDecorator(VirtualSSD(tmpdir))
+            ssd = RangeValidationDecorator(
+                CommandBufferedSSD(
+                    ErasableVirtualSSD(VirtualSSD(rootdir=tmpdir)), rootdir=tmpdir
+                )
+            )
 
             help_msg = ssd.help_message.strip()
             self.assert_equal_write_print_help_message(-1, help_msg, ssd)
