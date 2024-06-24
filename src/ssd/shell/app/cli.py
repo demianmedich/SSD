@@ -83,16 +83,7 @@ class SsdTestShellApp(cmd.Cmd):
             self.ssd_ctrl.help()
 
     def do_flush(self, args):
-        ssd = CommandBufferedSSD(
-            ErasableVirtualSSD(
-                VirtualSSD(
-                    rootdir=Path(Logger.find_git_root()).joinpath("src/ssd/shell/app")
-                )
-            ),
-            rootdir=Path(Logger.find_git_root()).joinpath("src/ssd/shell/app"),
-        )
-
-        ssd.flush()
+        self.ssd_ctrl.flush()
 
     def default(self, args: str):
         try:

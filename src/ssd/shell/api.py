@@ -75,13 +75,16 @@ class Shell:
             return
 
         while size:
-            self.logger.print(f"python -m ssd E {address} {min(10, size)}")
-            os.system(f"python -m ssd E {address} {min(10, size)}")
+            self.logger.print(f"python -m ssd E {address} {min( 10, size )}")
+            os.system(f"python -m ssd E {address} {min( 10, size )}")
             address += min(10, size)
             size -= min(10, size)
 
     def erase_range(self, start_address: int, end_address: int):
         self.erase(start_address, end_address - start_address)
+
+    def flush(self):
+        os.system(f"python -m ssd F")
 
     @staticmethod
     def _is_valid_address(address):
