@@ -34,7 +34,7 @@ for read_value in api.fullread():
 for lba in range(0, 20):
     api.erase(lba, 9)
 
-for lba in range(0, 29):
+for lba in range(0, 28):
     data = api.read(lba)
     if data != default_value:
         logger.print("FAIL last read fail")
