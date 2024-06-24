@@ -10,8 +10,6 @@ api = Shell(ResultReader(Path(os.getcwd())))
 default_value = "0x00000000"
 test_value = "0x1234567A"
 api.fullwrite(test_value)
-data = api.fullread()
-
 for read_value in api.fullread():
     if read_value != test_value:
         sys.exit(1)
