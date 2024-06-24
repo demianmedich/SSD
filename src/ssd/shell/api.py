@@ -130,3 +130,6 @@ class Shell:
                 self.logger.print("Fail")
                 return
         self.logger.print("Success")
+
+    def flush(self):
+        os.system(f"python -m ssd F")
