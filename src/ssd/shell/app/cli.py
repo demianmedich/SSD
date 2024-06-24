@@ -2,6 +2,10 @@ import cmd
 import os
 from pathlib import Path
 
+from ssd.driver.base import SSDInterface
+from ssd.driver.buffered_ssd import CommandBufferedSSD
+from ssd.driver.erasable_ssd import ErasableSSDInterface, ErasableVirtualSSD
+from ssd.driver.virtual import VirtualSSD
 from ssd.shell.api import ResultReader, Shell
 from ssd.shell.app.script_manager import ScriptManager
 from ssd.shell.cmd.base import ShellCommandInterface

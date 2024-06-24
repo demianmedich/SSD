@@ -52,18 +52,15 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
     def _buffer_command(self, cmd):
         commands = self._read_commands_buffer_txt()
         commands.append(cmd)
-        changed = self._optimize_commands(commands)
-        if changed:
-            with open(
-                self._buffer_txt_path, mode="wt", encoding="utf-8", newline="\n"
-            ) as f:
-                f.writelines(f"{cmd}\n" for cmd in commands)
-        else:
-            with open(
-                self._buffer_txt_path, mode="r+", encoding="utf-8", newline="\n"
-            ) as f:
-                f.seek(0, os.SEEK_END)
-                f.write(f"{cmd}\n")
+        commands = self._optimize_commands(commands)
+
+        with open(
+            self._buffer_txt_path, mode="wt", encoding="utf-8", newline="\n"
+        ) as f:
+            f.writelines(f"{cmd}\n" for cmd in self._optimize_commands(commands))
+
+        if len(commands) > 10:
+            self.flush()
 
     def flush(self) -> None:
         cmds = self._read_commands_buffer_txt()
@@ -88,13 +85,109 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
             pass
 
-    def _optimize_commands(self, commands: list[str]) -> bool:
-        """TODO: 최적화 로직을 구현해주세요.
+    def _extract_addr_from_cmd(self, command):
+        return int(command.split()[1])
 
-        Returns:
-            True: 최적화로 인해 커맨드 변경됐음.
-            False: 커맨드 변경사항 없음.
-        """
-        if not commands:
-            return False
-        return False
+    def _extract_size_from_cmd(self, command):
+        return int(command.split()[2])
+
+    def _extract_data_from_cmd(self, command):
+        return int(command.split()[2], 16)
+
+    def _extract_opcode_from_cmd(self, command):
+        return command.split()[0]
+
+    def _merge_write_cmd(self, later_cmd, older_cmd):
+        older_addr = self._extract_addr_from_cmd(older_cmd)
+        later_addr = self._extract_addr_from_cmd(later_cmd)
+        if self._extract_opcode_from_cmd(later_cmd) == "E":
+            later_size = self._extract_size_from_cmd(later_cmd)
+        else:
+            later_size = 1
+
+        if later_addr <= older_addr < later_addr + later_size:
+            older_cmd = None
+
+        return later_cmd, older_cmd
+
+    def _merge_erase_cmd(self, later_cmd, older_cmd):
+        older_addr = self._extract_addr_from_cmd(older_cmd)
+        older_size = self._extract_size_from_cmd(older_cmd)
+        later_addr = self._extract_addr_from_cmd(later_cmd)
+        later_size = self._extract_size_from_cmd(later_cmd)
+
+        if older_addr in range(
+            later_addr, later_addr + later_size + 1
+        ) or later_addr in range(older_addr, older_addr + older_size + 1):
+            new_addr = min(older_addr, later_addr)
+            new_size = max(older_addr + older_size, later_addr + later_size) - new_addr
+            if new_size <= 10:
+                later_cmd = None
+                older_cmd = f"E {new_addr} {new_size}"
+
+        return later_cmd, older_cmd
+
+    def _split_erase_cmd(self, later_cmd, older_cmd):
+        older_addr = self._extract_addr_from_cmd(older_cmd)
+        older_size = self._extract_size_from_cmd(older_cmd)
+        later_addr = self._extract_addr_from_cmd(later_cmd)
+
+        if not (older_addr <= later_addr < older_addr + older_size):
+            return later_cmd, None
+
+        split_cmds = []
+        j = list(range(older_addr, older_addr + older_size)).index(later_addr)
+        if j == 0:
+            split_cmds.append(f"E {older_addr + 1} {older_size - 1}")
+        elif j == older_size:
+            split_cmds.append(f"E {older_addr} {older_size - 1}")
+        else:
+            split_cmds.append(f"E {older_addr} {j}")
+            split_cmds.append(f"E {later_addr + 1} {older_size - j - 1}")
+
+        split_cmds.reverse()
+
+        return later_cmd, split_cmds
+
+    def _optimize_commands(self, commands: list[str]):
+        later_idx = len(commands) - 1
+
+        while later_idx >= 0:
+            later_opcode = self._extract_opcode_from_cmd(commands[later_idx])
+            ref_commands = commands.copy()
+
+            older_idx = later_idx - 1
+            while older_idx >= 0:
+                older_opcode = self._extract_opcode_from_cmd(commands[older_idx])
+                if older_opcode == "W":
+                    commands[later_idx], _ = self._merge_write_cmd(
+                        commands[later_idx], commands[older_idx]
+                    )
+                    if _ is None:
+                        commands.pop(older_idx)
+                        break
+
+                if older_opcode == "E" and later_opcode == "E":
+                    _, commands[older_idx] = self._merge_erase_cmd(
+                        commands[later_idx], commands[older_idx]
+                    )
+                    if _ is None:
+                        commands.pop(later_idx)
+                        break
+
+                if older_opcode == "E" and later_opcode == "W":
+                    commands[later_idx], _ = self._split_erase_cmd(
+                        commands[later_idx], commands[older_idx]
+                    )
+                    if _ is not None:
+                        commands.pop(older_idx)
+                        for __ in _:
+                            commands.insert(older_idx, __)
+                        break
+
+                older_idx -= 1
+
+            later_idx = (
+                (later_idx - 1) if ref_commands == commands else (len(commands) - 1)
+            )
+        return commands

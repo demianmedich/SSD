@@ -81,8 +81,8 @@ class Shell:
             return
 
         while size:
-            self.logger.print(f"python -m ssd E {address} {min(10, size)}")
-            os.system(f"python -m ssd E {address} {min(10, size)}")
+            self.logger.print(f"python -m ssd E {address} {min( 10, size )}")
+            os.system(f"python -m ssd E {address} {min( 10, size )}")
             address += min(10, size)
             size -= min(10, size)
 
