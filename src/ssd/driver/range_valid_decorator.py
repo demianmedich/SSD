@@ -1,10 +1,10 @@
 # coding=utf-8
-from ssd.driver.base import SSDInterface
+from ssd.driver.buffered_ssd import CommandBufferedSSDInterface
 
 
-class RangeValidationDecorator(SSDInterface):
+class RangeValidationDecorator(CommandBufferedSSDInterface):
 
-    def __init__(self, ssd: SSDInterface):
+    def __init__(self, ssd: CommandBufferedSSDInterface):
         self._ssd = ssd
 
     def read(self, addr: int):

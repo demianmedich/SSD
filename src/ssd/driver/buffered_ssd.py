@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -22,7 +23,8 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         self._result_txt_path = self.rootdir / RESULT_FILE
         self._ssd = ssd
 
-        self._make_initial_buffer()
+        if not self._buffer_txt_path.exists():
+            self._make_initial_buffer()
 
     def read(self, addr: int) -> None:
         for cmd in self._read_commands_buffer_txt():
@@ -60,6 +62,7 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
             with open(
                 self._buffer_txt_path, mode="r+", encoding="utf-8", newline="\n"
             ) as f:
+                f.seek(0, os.SEEK_END)
                 f.write(f"{cmd}\n")
 
     def flush(self) -> None:
