@@ -144,10 +144,8 @@ class CommandBuffer:
                 j_opcode = self._extract_opcode_from_cmd(commands[j])
                 # i is later, j is older
                 if j_opcode == "W":
-                    commands[i], commands[j] = self._merge_write_cmd(
-                        commands[i], commands[j]
-                    )
-                    if commands[j] is None:
+                    commands[i], _ = self._merge_write_cmd(commands[i], commands[j])
+                    if _ is None:
                         commands.pop(j)
                         break
 
@@ -160,6 +158,7 @@ class CommandBuffer:
                 if j_opcode == "E" and i_opcode == "W":
                     split_cmd = self._split_erase_cmds(commands[i], commands[j])
                     if split_cmd is not None:
+                        commands.pop(j)
                         for _ in split_cmd:
                             commands.insert(j, _)
                         break
