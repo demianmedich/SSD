@@ -106,7 +106,7 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
             later_size = 1
 
         if later_addr <= older_addr < later_addr + later_size:
-            return later_cmd, None
+            older_cmd = None
 
         return later_cmd, older_cmd
 
@@ -122,7 +122,8 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
             new_addr = min(older_addr, later_addr)
             new_size = max(older_addr + older_size, later_addr + later_size) - new_addr
             if new_size <= 10:
-                return None, f"E {new_addr} {new_size}"
+                later_cmd = None
+                older_cmd = f"E {new_addr} {new_size}"
 
         return later_cmd, older_cmd
 
@@ -149,37 +150,44 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         return later_cmd, split_cmds
 
     def _optimize_commands(self, commands: list[str]):
-        i = len(commands) - 1
+        later_idx = len(commands) - 1
 
-        while i >= 0:
-            i_opcode = self._extract_opcode_from_cmd(commands[i])
+        while later_idx >= 0:
+            later_opcode = self._extract_opcode_from_cmd(commands[later_idx])
             ref_commands = commands.copy()
 
-            j = i - 1
-            while j >= 0:
-                j_opcode = self._extract_opcode_from_cmd(commands[j])
-                # i is later, j is older
-                if j_opcode == "W":
-                    commands[i], _ = self._merge_write_cmd(commands[i], commands[j])
+            older_idx = later_idx - 1
+            while older_idx >= 0:
+                older_opcode = self._extract_opcode_from_cmd(commands[older_idx])
+                if older_opcode == "W":
+                    commands[later_idx], _ = self._merge_write_cmd(
+                        commands[later_idx], commands[older_idx]
+                    )
                     if _ is None:
-                        commands.pop(j)
+                        commands.pop(older_idx)
                         break
 
-                if j_opcode == "E" and i_opcode == "E":
-                    _, commands[j] = self._merge_erase_cmd(commands[i], commands[j])
+                if older_opcode == "E" and later_opcode == "E":
+                    _, commands[older_idx] = self._merge_erase_cmd(
+                        commands[later_idx], commands[older_idx]
+                    )
                     if _ is None:
-                        commands.pop(i)
+                        commands.pop(later_idx)
                         break
 
-                if j_opcode == "E" and i_opcode == "W":
-                    commands[i], _ = self._split_erase_cmd(commands[i], commands[j])
+                if older_opcode == "E" and later_opcode == "W":
+                    commands[later_idx], _ = self._split_erase_cmd(
+                        commands[later_idx], commands[older_idx]
+                    )
                     if _ is not None:
-                        commands.pop(j)
+                        commands.pop(older_idx)
                         for __ in _:
-                            commands.insert(j, __)
+                            commands.insert(older_idx, __)
                         break
 
-                j -= 1
+                older_idx -= 1
 
-            i = i - 1 if ref_commands == commands else (len(commands) - 1)
+            later_idx = (
+                (later_idx - 1) if ref_commands == commands else (len(commands) - 1)
+            )
         return commands
