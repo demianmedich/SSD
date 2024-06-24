@@ -27,27 +27,31 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
             self._make_initial_buffer()
 
     def read(self, addr: int) -> None:
-        for cmd in self._read_commands_buffer_txt():
-            opcode, address, value_or_cnt = cmd.split()
-
-            if int(address) == addr:
-                match opcode:
-                    case "W":
-                        self._result_txt_path.write_text(value_or_cnt)
-                        return
-                    case "E":
-                        self._result_txt_path.write_text("0x00000000")
-                        return
-                    case _:
-                        raise ValueError(f"Invalid opcode {opcode}")
+        opcode, value_or_cnt = self._check_in_buffer(addr)
+        if opcode == "E":
+            self._result_txt_path.write_text("0x00000000")
+            return
+        if opcode == "W":
+            self._result_txt_path.write_text(value_or_cnt)
+            return
 
         self._ssd.read(addr)
+        return
 
     def write(self, addr: int, data: int):
         self._buffer_command(f"W {addr} 0x{data:08X}")
 
     def erase(self, addr: int, size: int):
         self._buffer_command(f"E {addr} {size}")
+
+    def _check_in_buffer(self, ref_addr):
+        for _ in self._read_commands_buffer_txt()[::-1]:
+            opcode = self._extract_opcode_from_cmd(_)
+            if opcode == "W" and ref_addr == self._extract_addr_from_cmd(_):
+                return opcode, self._extract_data_from_cmd(_)
+            if opcode == "E" and ref_addr in self._extract_range_from_cmd(_):
+                return opcode, 0
+        return None, None
 
     def _buffer_command(self, cmd):
         commands = self._read_commands_buffer_txt()
@@ -85,6 +89,12 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
             pass
 
+    def _extract_range_from_cmd(self, cmd):
+        return range(
+            self._extract_addr_from_cmd(cmd),
+            self._extract_addr_from_cmd(cmd) + self._extract_size_from_cmd(cmd),
+        )
+
     def _extract_addr_from_cmd(self, command):
         return int(command.split()[1])
 
@@ -92,7 +102,7 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         return int(command.split()[2])
 
     def _extract_data_from_cmd(self, command):
-        return int(command.split()[2], 16)
+        return command.split()[2]
 
     def _extract_opcode_from_cmd(self, command):
         return command.split()[0]
@@ -135,18 +145,19 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         older_size = self._extract_size_from_cmd(older_cmd)
         later_addr = self._extract_addr_from_cmd(later_cmd)
 
-        if not (older_addr <= later_addr < older_addr + older_size):
+        if later_addr not in self._extract_range_from_cmd(older_cmd):
             return later_cmd, None
 
         split_cmds = []
-        j = list(range(older_addr, older_addr + older_size)).index(later_addr)
-        if j == 0:
+
+        later_index = list(self._extract_range_from_cmd(older_cmd)).index(later_addr)
+        if later_index == 0:
             split_cmds.append(f"E {older_addr + 1} {older_size - 1}")
-        elif j == older_size - 1:
+        elif later_index == older_size - 1:
             split_cmds.append(f"E {older_addr} {older_size - 1}")
         else:
-            split_cmds.append(f"E {older_addr} {j}")
-            split_cmds.append(f"E {later_addr + 1} {older_size - j - 1}")
+            split_cmds.append(f"E {older_addr} {later_index}")
+            split_cmds.append(f"E {later_addr + 1} {older_size - later_index - 1}")
 
         split_cmds = [_ for _ in split_cmds if split_cmds[-1] if int(_.split()[-1]) > 0]
         split_cmds.reverse()
