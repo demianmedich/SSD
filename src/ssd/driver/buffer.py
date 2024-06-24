@@ -121,7 +121,7 @@ class CommandBuffer:
             cmds.append(f"E {cand[i]} {size}")
         else:
             cmds.append(cmd1)
-
+        cmds.reverse()
         return cmds
 
     def _optimize_commands(self, commands: list[str]):
@@ -152,9 +152,7 @@ class CommandBuffer:
                         )
 
                     if self._extract_opcode_from_cmd(commands[j]) == "W":
-                        for _ in self._split_erase_commands(commands[i], commands[j])[
-                            ::-1
-                        ]:
+                        for _ in self._split_erase_commands(commands[i], commands[j]):
                             commands.insert(i, _)
 
             i += 1
