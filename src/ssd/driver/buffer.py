@@ -152,10 +152,8 @@ class CommandBuffer:
                         break
 
                 if j_opcode == "E" and i_opcode == "E":
-                    commands[i], commands[j] = self._merge_erase_cmds(
-                        commands[i], commands[j]
-                    )
-                    if commands[i] is None:
+                    _, commands[j] = self._merge_erase_cmds(commands[i], commands[j])
+                    if _ is None:
                         commands.pop(i)
                         break
 
