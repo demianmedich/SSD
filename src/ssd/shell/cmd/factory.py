@@ -1,5 +1,7 @@
 from ssd.shell.api import Shell
 from ssd.shell.cmd.base import IShellCommand
+from ssd.shell.cmd.full_read import FullReadCommand
+from ssd.shell.cmd.full_write import FullWriteCommand
 from ssd.shell.cmd.read import ReadCommand
 from ssd.shell.cmd.write import WriteCommand
 
@@ -10,6 +12,8 @@ class ShellCommandFactory:
         self.support_cmds = {
             "read": ReadCommand,
             "write": WriteCommand,
+            "fullread": FullReadCommand,
+            "fullwrite": FullWriteCommand,
             # TODO
         }
 
