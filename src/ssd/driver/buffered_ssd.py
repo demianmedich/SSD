@@ -139,7 +139,7 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         j = list(range(older_addr, older_addr + older_size)).index(later_addr)
         if j == 0:
             split_cmds.append(f"E {older_addr + 1} {older_size - 1}")
-        elif j == older_size:
+        elif j == older_size - 1:
             split_cmds.append(f"E {older_addr} {older_size - 1}")
         else:
             split_cmds.append(f"E {older_addr} {j}")
