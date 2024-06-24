@@ -44,17 +44,15 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
     def erase(self, addr: int, size: int):
         self._buffer_command(f"E {addr} {size}")
 
-    def _check_in_buffer(self, addr):
+    def _check_in_buffer(self, ref_addr):
         for _ in self._read_commands_buffer_txt()[::-1]:
             opcode = self._extract_opcode_from_cmd(_)
+            addr = self._extract_addr_from_cmd(_)
             if opcode == "W":
-                if addr == self._extract_addr_from_cmd(_):
+                if ref_addr == addr:
                     return opcode, _.split()[-1]
             if opcode == "E":
-                if addr in range(
-                    self._extract_addr_from_cmd(_),
-                    self._extract_addr_from_cmd(_) + self._extract_size_from_cmd(_),
-                ):
+                if ref_addr in range(addr, addr + self._extract_size_from_cmd(_)):
                     return opcode, 0
         return None, None
 
