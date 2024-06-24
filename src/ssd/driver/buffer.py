@@ -69,6 +69,18 @@ class CommandBuffer:
         with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
             pass
 
+    def _extract_opcode_addr_size_erase(self, command):
+        opcode = command.split()[0]
+        addr = int(command.split()[1])
+        size = int(command.split()[2])
+        return opcode, addr, size
+
+    def _extract_opcode_addr_size_write(self, command):
+        opcode = command.split()[0]
+        addr = int(command.split()[1])
+        data = int(command.split()[2], 16)
+        return opcode, addr, data
+
     def _merge_erase_commands(self, cmd1, cmd2):
         addr1, size1 = (int(_) for _ in cmd1.split()[1:])
         addr2, size2 = (int(_) for _ in cmd2.split()[1:])
@@ -127,11 +139,7 @@ class CommandBuffer:
                         )
 
                         if addr <= write_addr < addr + size:
-                            candidate = list(range(addr, addr + size))
-                            candidate.remove(write_addr)
                             del commands[j]
-                            for _ in self._split_erase_commands(candidate)[::-1]:
-                                commands.insert(j, _)
                             i = 0
 
                 if commands[i].startswith("W"):
@@ -139,7 +147,7 @@ class CommandBuffer:
                     if commands[j].startswith(f"W {addr}"):
                         del commands[j]
 
-                    elif commands[j].startswith("E"):
+                    if commands[j].startswith("E"):
                         _, erase_addr, erase_size = (
                             self._extract_opcode_addr_size_write(commands[j])
                         )
@@ -153,15 +161,3 @@ class CommandBuffer:
                             i = 0
 
         return commands
-
-    def _extract_opcode_addr_size_erase(self, command):
-        opcode = command.split()[0]
-        addr = int(command.split()[1])
-        size = int(command.split()[2])
-        return opcode, addr, size
-
-    def _extract_opcode_addr_size_write(self, command):
-        opcode = command.split()[0]
-        addr = int(command.split()[1])
-        data = int(command.split()[2], 16)
-        return opcode, addr, data
