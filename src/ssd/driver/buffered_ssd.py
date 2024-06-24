@@ -27,27 +27,35 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
             self._make_initial_buffer()
 
     def read(self, addr: int) -> None:
-        for cmd in self._read_commands_buffer_txt():
-            opcode, address, value_or_cnt = cmd.split()
+        value_or_cnt = self._check_in_buffer(addr)
+        if value_or_cnt is None:
+            self._ssd.read(addr)
+            return
+        if value_or_cnt == 0:
+            self._result_txt_path.write_text("0x00000000")
+            return
 
-            if int(address) == addr:
-                match opcode:
-                    case "W":
-                        self._result_txt_path.write_text(value_or_cnt)
-                        return
-                    case "E":
-                        self._result_txt_path.write_text("0x00000000")
-                        return
-                    case _:
-                        raise ValueError(f"Invalid opcode {opcode}")
-
-        self._ssd.read(addr)
+        self._result_txt_path.write_text(value_or_cnt)
+        return
 
     def write(self, addr: int, data: int):
         self._buffer_command(f"W {addr} 0x{data:08X}")
 
     def erase(self, addr: int, size: int):
         self._buffer_command(f"E {addr} {size}")
+
+    def _check_in_buffer(self, addr):
+        for _ in self._read_commands_buffer_txt()[::-1]:
+            if self._extract_opcode_from_cmd(_) == "W":
+                if addr == self._extract_addr_from_cmd(_):
+                    return _.split()[-1]
+            if self._extract_opcode_from_cmd(_) == "E":
+                if addr in range(
+                    self._extract_addr_from_cmd(_),
+                    self._extract_addr_from_cmd(_) + self._extract_size_from_cmd(_),
+                ):
+                    return 0
+        return None
 
     def _buffer_command(self, cmd):
         commands = self._read_commands_buffer_txt()
