@@ -116,22 +116,29 @@ class CommandBuffer:
         later_addr = self._extract_addr_from_cmd(later_cmd)
 
         cmds = []
+
         if older_addr <= later_addr < older_addr + older_size:
-            cand = list(range(older_addr, older_addr + older_size))
-            cand.remove(later_addr)
+            j = list(range(older_addr, older_addr + older_size)).index(later_addr)
+            if j == 0:
+                cmds.append(f"E {later_addr} {older_size - 1}")
+            elif j == older_size:
+                cmds.append(f"E {older_addr} {older_size - 1}")
+            else:
+                cmds.append(f"E {older_addr} {j}")
+                cmds.append(f"E {later_addr + 1} {older_size - j - 1}")
 
-            i = 0
-            for j in range(i + 1, len(cand)):
-                if cand[j] - cand[j - 1] > 1:
-                    size = cand[j - 1] - cand[i] + 1
-                    cmds.append(f"E {cand[i]} {size}")
-                    i = j
-
-            # last one
-            size = cand[-1] - cand[i] + 1
-            cmds.append(f"E {cand[i]} {size}")
+            # i = 0
+            # for j in range(i + 1, len(cand)):
+            #     if cand[j] - cand[j - 1] > 1:
+            #         size = cand[j - 1] - cand[i] + 1
+            #         cmds.append(f"E {cand[i]} {size}")
+            #         i = j
+            #
+            # # last one
+            # size = cand[-1] - cand[i] + 1
+            # cmds.append(f"E {cand[i]} {size}")
         else:
-            cmds.append(later_cmd)
+            cmds.append(older_cmd)
 
         cmds.reverse()
 
@@ -156,7 +163,10 @@ class CommandBuffer:
                         )
 
                     if self._extract_opcode_from_cmd(commands[i]) == "W":
-                        for _ in self._split_erase_commands(commands[i], commands[j]):
+                        # del
+                        for _ in self._split_erase_commands(
+                            commands[i], commands.pop(j)
+                        ):
                             commands.insert(j, _)
 
                 j += 1
