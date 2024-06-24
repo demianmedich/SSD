@@ -48,12 +48,10 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         for _ in self._read_commands_buffer_txt()[::-1]:
             opcode = self._extract_opcode_from_cmd(_)
             addr = self._extract_addr_from_cmd(_)
-            if opcode == "W":
-                if ref_addr == addr:
-                    return opcode, _.split()[-1]
-            if opcode == "E":
-                if ref_addr in range(addr, addr + self._extract_size_from_cmd(_)):
-                    return opcode, 0
+            if opcode == "W" and ref_addr == addr:
+                return opcode, _.split()[-1]
+            if opcode == "E" and ref_addr in self._extract_range_erase_cmd(_):
+                return opcode, 0
         return None, None
 
     def _buffer_command(self, cmd):
@@ -91,6 +89,12 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
     def _make_initial_buffer(self):
         with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
             pass
+
+    def _extract_range_erase_cmd(self, cmd):
+        return range(
+            self._extract_addr_from_cmd(cmd),
+            self._extract_addr_from_cmd(cmd) + self._extract_size_from_cmd(cmd),
+        )
 
     def _extract_addr_from_cmd(self, command):
         return int(command.split()[1])
