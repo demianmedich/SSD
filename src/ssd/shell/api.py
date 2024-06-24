@@ -3,6 +3,12 @@ import os
 from pathlib import Path
 
 from ssd.util.logger import Logger
+from ssd.util.valid import (
+    DEFAULT_LOWER_BOUND,
+    DEFAULT_UPPER_BOUND,
+    is_8digit_hex_string,
+    is_valid_address,
+)
 
 
 class ResultReader:
@@ -39,37 +45,36 @@ class Shell:
         f"\tflush\n"
     )
 
-    def __init__(self, result_reader: ResultReader):
+    def __init__(
+        self,
+        result_reader: ResultReader,
+        address_lower_bound: int = DEFAULT_LOWER_BOUND,
+        address_upper_bound: int = DEFAULT_UPPER_BOUND,
+    ):
         self.result_reader = result_reader
-        self.__min_lba = 0
-        self.__max_lba = 99
+        self.__min_lba = address_lower_bound
+        self.__max_lba = address_upper_bound
         self.logger = Logger()
 
     def is_valid(self, address, value):
-        if not self._is_valid_address(address):
+        if not is_valid_address(address):
             return False
 
-        if (
-            len(value) == 10
-            and value.startswith("0x")
-            and all(c in "0123456789ABCDEF" for c in value[2:])
-        ):
+        if is_8digit_hex_string(value):
             return True
 
         return False
-
-    def _is_valid_address(self, address):
-        return self.__min_lba <= address <= self.__max_lba
 
     def write(self, address: int, value: str):
         if not self.is_valid(address, value):
             self.help()
             return
 
+        self.logger.print(f"python -m ssd W {address} {value}")
         os.system(f"python -m ssd W {address} {value}")
 
     def read(self, address: int) -> str:
-        if not self._is_valid_address(address):
+        if not is_valid_address(address):
             self.help()
             return ""
 
@@ -84,8 +89,8 @@ class Shell:
             return
 
         while size:
-            self.logger.print(f"python -m ssd E {address} {min( 10, size )}")
-            os.system(f"python -m ssd E {address} {min( 10, size )}")
+            self.logger.print(f"python -m ssd E {address} {min(10, size)}")
+            os.system(f"python -m ssd E {address} {min(10, size)}")
             address += min(10, size)
             size -= min(10, size)
 

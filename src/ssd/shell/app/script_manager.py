@@ -6,7 +6,7 @@ from ssd.util.logger import Logger
 
 class ScriptManager:
 
-    script_dir = Path(Logger.find_git_root()).joinpath("src/script")
+    script_dir = Path(Logger.find_git_root()).joinpath("script")
 
     def find(self, script_name: str) -> Path:
         script_path = self.script_dir / f"{script_name}.py"
