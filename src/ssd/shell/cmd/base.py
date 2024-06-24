@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from ssd.shell.api import Shell
 
 
-class IShellCommand(ABC):
+class ShellCommandInterface(ABC):
     def __init__(self, api: Shell, args: list[str]):
         self.api = api
         self.args = args

@@ -1,8 +1,8 @@
 from ssd.shell.api import Shell
-from ssd.shell.cmd.base import IShellCommand
+from ssd.shell.cmd.base import ShellCommandInterface
 
 
-class ReadCommand(IShellCommand):
+class ReadCommand(ShellCommandInterface):
     def __init__(self, api: Shell, args: list[str]):
         super().__init__(api, args)
         self.address = 0

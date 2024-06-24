@@ -1,8 +1,8 @@
 from ssd.shell.api import Shell
-from ssd.shell.cmd.base import IShellCommand
+from ssd.shell.cmd.base import ShellCommandInterface
 
 
-class EraseRangeCommand(IShellCommand):
+class EraseRangeCommand(ShellCommandInterface):
     def __init__(self, api: Shell, args: list[str]):
         super().__init__(api, args)
         self.start_addr = 0

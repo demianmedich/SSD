@@ -1,7 +1,7 @@
-from ssd.shell.cmd.base import IShellCommand
+from ssd.shell.cmd.base import ShellCommandInterface
 
 
-class FullReadCommand(IShellCommand):
+class FullReadCommand(ShellCommandInterface):
     def is_valid(self) -> bool:
         return len(self.args) == 0
 

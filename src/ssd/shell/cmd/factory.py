@@ -1,5 +1,5 @@
 from ssd.shell.api import Shell
-from ssd.shell.cmd.base import IShellCommand
+from ssd.shell.cmd.base import ShellCommandInterface
 from ssd.shell.cmd.erase import EraseCommand
 from ssd.shell.cmd.erase_range import EraseRangeCommand
 from ssd.shell.cmd.flush import FlushCommand
@@ -22,7 +22,7 @@ class ShellCommandFactory:
             "flush": FlushCommand,
         }
 
-    def parse(self, cmd_line: str) -> IShellCommand:
+    def parse(self, cmd_line: str) -> ShellCommandInterface:
         parts = cmd_line.strip().split()
         command_name, args = parts[0], parts[1:]
 

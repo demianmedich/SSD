@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ssd.shell.api import ResultReader, Shell
 from ssd.shell.app.script_manager import ScriptManager
-from ssd.shell.cmd.base import IShellCommand
+from ssd.shell.cmd.base import ShellCommandInterface
 from ssd.shell.cmd.factory import ShellCommandFactory
 from ssd.util.logger import Logger
 
@@ -42,13 +42,13 @@ class SsdTestShellApp(cmd.Cmd):
 
         self._run_script(_script_path)
 
-    def _interpret_as_ssd_command(self, args: str) -> IShellCommand | None:
+    def _interpret_as_ssd_command(self, args: str) -> ShellCommandInterface | None:
         try:
             return self._cmd_factory.parse(args)
         except ValueError:
             return None
 
-    def _run_ssd_cmd(self, ssd_cmd: IShellCommand):
+    def _run_ssd_cmd(self, ssd_cmd: ShellCommandInterface):
         try:
             ssd_cmd.execute()
         except Exception as e:
