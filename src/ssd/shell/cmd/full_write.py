@@ -8,4 +8,5 @@ class FullWriteCommand(IShellCommand):
     def execute(self) -> None:
         if not self.is_valid():
             self.api.help()
+            return
         self.api.fullwrite(self.args[0])

@@ -21,4 +21,5 @@ class EraseRangeCommand(IShellCommand):
     def execute(self) -> None:
         if not self.is_valid():
             self.api.help()
+            return
         self.api.erase_range(self.start_addr, self.end_addr)

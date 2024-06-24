@@ -21,4 +21,5 @@ class EraseCommand(IShellCommand):
     def execute(self) -> None:
         if not self.is_valid():
             self.api.help()
+            return
         self.api.erase(self.address, self.size)

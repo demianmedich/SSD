@@ -18,4 +18,5 @@ class WriteCommand(IShellCommand):
     def execute(self) -> None:
         if not self.is_valid():
             self.api.help()
+            return
         self.api.write(self.address, self.value)
