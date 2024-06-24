@@ -30,7 +30,13 @@ class Shell:
         f"fullwrite: Write value (0xXXXXXXXX) to entire address\n"
         f"\tfullwrite [value]\n"
         f"fullread: Read value of entire address\n"
-        f"\tfullread"
+        f"\tfullread\n"
+        f"erase: Erase value amount of size from address\n"
+        f"\terase [address] [size]\n"
+        f"erase_range: Erase value from start (include) to end (exclude)\n"
+        f"\terase_range [start address] [end address]\n"
+        f"flush: Flush all commands in buffer\n"
+        f"\tflush\n"
     )
 
     def __init__(self, result_reader: ResultReader):
@@ -107,7 +113,7 @@ class Shell:
             result.append(self.read(lba))
         return result
 
-    def testapp1(self):
+    def testapp1(self):  # TODO: remove this
         test_value = "0xAAAAAAAA"
         self.fullwrite(test_value)
         data = self.fullread()
@@ -117,7 +123,7 @@ class Shell:
                 return
         self.logger.print("Success")
 
-    def testapp2(self):
+    def testapp2(self):  # TODO: remove this
         test_value1 = "0xAAAABBBB"
         test_value2 = "0x12345678"
         for _ in range(30):
@@ -133,3 +139,6 @@ class Shell:
                 self.logger.print("Fail")
                 return
         self.logger.print("Success")
+
+    def flush(self):
+        os.system(f"python -m ssd F")

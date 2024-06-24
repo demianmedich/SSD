@@ -8,7 +8,7 @@ class ScriptManager:
 
     script_dir = Path(Logger.find_git_root()).joinpath("src/script")
 
-    def find(self, script_name: str):
+    def find(self, script_name: str) -> Path:
         script_path = self.script_dir / f"{script_name}.py"
         if not script_path.exists():
             raise FileNotFoundError(f"{script_name}")
