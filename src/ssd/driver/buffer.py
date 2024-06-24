@@ -137,8 +137,8 @@ class CommandBuffer:
             # # last one
             # size = cand[-1] - cand[i] + 1
             # cmds.append(f"E {cand[i]} {size}")
-        # else:
-        # cmds.append(later_cmd)
+        else:
+            cmds.append(older_cmd)
 
         cmds.reverse()
 
