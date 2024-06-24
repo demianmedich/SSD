@@ -10,12 +10,23 @@ from ssd.util.logger import Logger
 
 def main():
     logger = Logger()
+
+    rootdir = Path(os.getcwd())
+
+    truncate_file(rootdir / "result.txt")
+    truncate_file(rootdir / "buffer.txt")
+
     if len(sys.argv) == 1:
         SsdTestShellApp(Shell(ResultReader(Path(os.getcwd())))).cmdloop()
     elif len(sys.argv) == 2:
         SsdTestRunnerApp().execute_runlist(sys.argv[1])
     else:
         logger.print("Invalid number of arguments.")
+
+
+def truncate_file(file: Path):
+    with open(file, mode="w", encoding="utf-8", newline="\n"):
+        pass
 
 
 if __name__ == "__main__":

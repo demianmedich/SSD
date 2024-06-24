@@ -1,6 +1,9 @@
 import sys
 from pathlib import Path
 
+from ssd.driver.buffered_ssd import CommandBufferedSSD
+from ssd.driver.erasable_ssd import ErasableVirtualSSD
+from ssd.driver.range_valid_decorator import RangeValidationDecorator
 from ssd.driver.virtual import VirtualSSD
 
 
@@ -22,7 +25,13 @@ def get_args() -> (str, int, int):
 
 def main():
     cmd, addr, data = get_args()
-    ssd = VirtualSSD(Path.cwd())
+
+    rootdir = Path.cwd()
+    ssd = RangeValidationDecorator(
+        CommandBufferedSSD(
+            ErasableVirtualSSD((VirtualSSD(rootdir=rootdir))), rootdir=rootdir
+        )
+    )
 
     if cmd == "R":
         ssd.read(addr)
