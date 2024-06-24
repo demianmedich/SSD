@@ -30,7 +30,13 @@ class Shell:
         f"fullwrite: Write value (0xXXXXXXXX) to entire address\n"
         f"\tfullwrite [value]\n"
         f"fullread: Read value of entire address\n"
-        f"\tfullread"
+        f"\tfullread\n"
+        f"erase: Erase value amount of size from address\n"
+        f"\terase [address] [size]\n"
+        f"erase_range: Erase value from start (include) to end (exclude)\n"
+        f"\terase_range [start address] [end address]\n"
+        f"flush: Flush all commands in buffer\n"
+        f"\tflush\n"
     )
 
     def __init__(self, result_reader: ResultReader):
