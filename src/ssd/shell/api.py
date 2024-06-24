@@ -46,7 +46,7 @@ class Shell:
         self.logger = Logger()
 
     def is_valid(self, address, value):
-        if self.__min_lba > address or address > self.__max_lba:
+        if not self._is_valid_address(address):
             return False
 
         if (
@@ -57,6 +57,9 @@ class Shell:
             return True
 
         return False
+
+    def _is_valid_address(self, address):
+        return self.__min_lba <= address <= self.__max_lba
 
     def write(self, address: int, value: str):
         if not self.is_valid(address, value):
@@ -88,10 +91,6 @@ class Shell:
 
     def erase_range(self, start_address: int, end_address: int):
         self.erase(start_address, end_address - start_address)
-
-    @staticmethod
-    def _is_valid_address(address):
-        return 0 <= address <= 99
 
     def help(self):
         print(self.HELP_MESSAGE)
