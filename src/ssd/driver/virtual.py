@@ -39,14 +39,6 @@ class VirtualSSD(SSDInterface):
     def result_file(self) -> Path:
         return self._result_file
 
-    def print_help(self):
-        print("Invalid command!")
-        print("Read:  python -m ssd R {addr}")
-        print("Write: python -m ssd W {addr} {data}")
-        print("Erase: python -m ssd E {addr} {size}")
-        print("Flush: python -m ssd F ")
-        print("addr = [0, 99], data = 0xXXXXXXXX, size = [1, 10]")
-
     def read(self, addr: int):
         with open(self.nand_file, mode="rt", encoding="utf-8", newline="\n") as f:
             f.seek(len(f.readline()) * addr)
