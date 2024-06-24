@@ -127,7 +127,6 @@ class CommandBuffer:
                             del commands[i]
                             i = 1
 
-                # j latest, i oldest
                 if self._extract_opcode_from_cmd(commands[i]) == "E":
                     i_addr = self._extract_addr_from_cmd(commands[j])
                     i_size = self._extract_size_from_cmd(commands[j])
