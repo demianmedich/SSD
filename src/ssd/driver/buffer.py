@@ -147,6 +147,8 @@ class CommandBuffer:
                     )
                     if older_cmd:
                         commands.insert(j, older_cmd)
+                    else:
+                        break
 
                 if self._extract_opcode_from_cmd(commands[j]) == "E":
                     if self._extract_opcode_from_cmd(commands[i]) == "E":
@@ -155,6 +157,8 @@ class CommandBuffer:
                         )
                         if later_cmd:
                             commands.insert(i, later_cmd)
+                        else:
+                            break
 
                     elif self._extract_opcode_from_cmd(commands[i]) == "W":
                         for _ in self._split_erase_cmds(commands[i], commands.pop(j)):
