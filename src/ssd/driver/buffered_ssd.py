@@ -47,8 +47,7 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
     def _check_in_buffer(self, ref_addr):
         for _ in self._read_commands_buffer_txt()[::-1]:
             opcode = self._extract_opcode_from_cmd(_)
-            addr = self._extract_addr_from_cmd(_)
-            if opcode == "W" and ref_addr == addr:
+            if opcode == "W" and ref_addr == self._extract_addr_from_cmd(_):
                 return opcode, _.split()[-1]
             if opcode == "E" and ref_addr in self._extract_range_erase_cmd(_):
                 return opcode, 0
