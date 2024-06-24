@@ -69,13 +69,25 @@ class CommandBuffer:
         with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
             pass
 
-    def _extract_opcode_addr_size_erase(self, command):
+    def _extract_erase_addr_size(self, command):
         opcode = command.split()[0]
         addr = int(command.split()[1])
         size = int(command.split()[2])
         return opcode, addr, size
 
-    def _extract_opcode_addr_size_write(self, command):
+    def _extract_addr_from_cmd(self, command):
+        return int(command.split()[1])
+
+    def _extract_size_from_cmd(self, command):
+        return int(command.split()[2])
+
+    def _extract_data_from_cmd(self, command):
+        return int(command.split()[2], 16)
+
+    def _extract_opcode_from_cmd(self, commands):
+        return commands.split()[0]
+
+    def _extract_write_addr_size(self, command):
         opcode = command.split()[0]
         addr = int(command.split()[1])
         data = int(command.split()[2], 16)
@@ -107,57 +119,56 @@ class CommandBuffer:
         return cmds
 
     def _optimize_commands(self, commands: list[str]):
-        updated_commands = False
-
         i = len(commands) - 1
         while i > 0:
             j = 0
             while j < i:
-                if commands[i].startswith("E"):
-                    _, addr, size = self._extract_opcode_addr_size_erase(commands[i])
-                    if commands[j].startswith("E"):
-                        _, ref_addr, ref_size = self._extract_opcode_addr_size_erase(
-                            commands[j]
-                        )
-                        if (ref_addr <= addr <= ref_addr + ref_size) or (
-                            addr <= ref_addr <= addr + size
+                if self._extract_opcode_from_cmd(commands[i]) == "W":
+                    i_addr = self._extract_addr_from_cmd(commands[i])
+
+                    if self._extract_opcode_from_cmd(commands[j]) == "W":
+                        addr = self._extract_addr_from_cmd(commands[j])
+                        if addr == i_addr:
+                            del commands[i]
+                            i = 1
+
+                    if self._extract_opcode_from_cmd(commands[j]) == "E":
+                        addr = self._extract_addr_from_cmd(commands[j])
+                        size = self._extract_size_from_cmd(commands[j])
+                        if addr <= i_addr < addr + size:
+                            del commands[i]
+                            i = 1
+
+                # j latest, i oldest
+                if self._extract_opcode_from_cmd(commands[i]) == "E":
+                    i_addr = self._extract_addr_from_cmd(commands[j])
+                    i_size = self._extract_size_from_cmd(commands[j])
+
+                    if self._extract_opcode_from_cmd(commands[j]) == "E":
+                        addr = self._extract_addr_from_cmd(commands[j])
+                        size = self._extract_size_from_cmd(commands[j])
+                        if (i_addr <= addr <= i_addr + i_size) or (
+                            addr <= i_addr <= addr + size
                         ):
                             if (
-                                max(addr + size, ref_addr + ref_size)
-                                - min(addr, ref_addr)
+                                max(addr + size, i_addr + i_size) - min(addr, i_addr)
                                 <= 10
                             ):
-                                commands[j] = self._merge_erase_commands(
+                                commands[i] = self._merge_erase_commands(
                                     commands[i], commands[j]
                                 )
-                                del commands[i]
-                                i = 0
+                                del commands[j]
+                                i = 1
 
-                    if commands[j].startswith("W"):
-                        _, write_addr, _ = self._extract_opcode_addr_size_write(
-                            commands[j]
-                        )
-
-                        if addr <= write_addr < addr + size:
-                            del commands[j]
-                            i = 0
-
-                if commands[i].startswith("W"):
-                    _, addr, data = self._extract_opcode_addr_size_write(commands[i])
-                    if commands[j].startswith(f"W {addr}"):
-                        del commands[j]
-
-                    if commands[j].startswith("E"):
-                        _, erase_addr, erase_size = (
-                            self._extract_opcode_addr_size_write(commands[j])
-                        )
-                        if erase_addr <= addr < erase_addr + erase_size:
-                            candidate = list(range(erase_addr, erase_addr + erase_size))
+                    if self._extract_opcode_from_cmd(commands[j]) == "W":
+                        addr = self._extract_addr_from_cmd(commands[j])
+                        if i_addr <= addr < i_addr + i_size:
+                            candidate = list(range(i_addr, i_addr + i_size))
                             candidate.remove(addr)
-                            del commands[j]
+                            del commands[i]
 
                             for _ in self._split_erase_commands(candidate)[::-1]:
-                                commands.insert(j, _)
-                            i = 0
+                                commands.insert(i, _)
+                            i = 1
 
         return commands
