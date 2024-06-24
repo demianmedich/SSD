@@ -11,11 +11,3 @@ class SSDInterface(ABC):
     @abstractmethod
     def write(self, addr: int, data: int):
         raise NotImplementedError()
-
-    @abstractmethod
-    def erase(self, addr: int, size: int):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def flush(self):
-        raise NotImplementedError()
