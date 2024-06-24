@@ -16,9 +16,6 @@ def main():
     truncate_file(rootdir / "result.txt")
     truncate_file(rootdir / "buffer.txt")
 
-    with open(rootdir / "buffer.txt", mode="w", encoding="utf-8", newline="\n"):
-        pass
-
     if len(sys.argv) == 1:
         SsdTestShellApp(Shell(ResultReader(Path(os.getcwd())))).cmdloop()
     elif len(sys.argv) == 2:
