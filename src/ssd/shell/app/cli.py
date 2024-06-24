@@ -52,9 +52,6 @@ class SsdTestShellApp(cmd.Cmd):
         except ValueError:
             return None
 
-    def do_flush(self, args):
-        self.ssd_ctrl.flush()
-
     def _run_ssd_cmd(self, ssd_cmd: ShellCommandInterface):
         try:
             ssd_cmd.execute()
