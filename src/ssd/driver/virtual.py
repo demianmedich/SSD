@@ -1,7 +1,7 @@
 # coding=utf-8
 from pathlib import Path
 
-from src.ssd.driver.base import SSDInterface
+from ssd.driver.base import SSDInterface
 from ssd.util.logger import Logger
 
 DEFAULT_VALUE = 0x00000000
@@ -57,9 +57,6 @@ class VirtualSSD(SSDInterface):
         with open(self.nand_file, mode="r+", encoding="utf-8", newline="\n") as f:
             f.seek(len(f.readline()) * addr)
             f.write(self.data_format(addr, data))
-
-    def flush(self):
-        pass
 
     def data_format(self, addr: int, data: int) -> str:
         return f"{addr:02}\t0x{data:08X}\n"
