@@ -6,10 +6,11 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent.parent))
-from ssd.shell import ReadResultAccessor, Shell  # noqa
+from ssd.shell.api import ResultReader, Shell
 
-api = Shell(ReadResultAccessor(Path(os.getcwd())))
+sys.path.append(str(Path(__file__).parent.parent))
+
+api = Shell(ResultReader(Path(os.getcwd())))
 
 target_address = 0
 value = "0x19930516"
