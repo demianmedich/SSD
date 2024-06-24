@@ -1,16 +1,10 @@
-"""
-TODO
-    1. Command 패턴 적용?
-    - 모든 명령 default 에서 관리
-    - 모든 에러 catch 해서 print
-"""
-
 import cmd
 import os
 from pathlib import Path
 
 from ssd.shell.api import ResultReader, Shell
 from ssd.shell.app.script_manager import ScriptManager
+from ssd.shell.cmd.base import IShellCommand
 from ssd.shell.cmd.factory import ShellCommandFactory
 from ssd.util.logger import Logger
 
@@ -38,19 +32,35 @@ class SsdTestShellApp(cmd.Cmd):
         self.ssd_ctrl.help()
 
     def default(self, args: str):
-        try:
-            cmd_object = self._cmd_factory.parse(args)
-            cmd_object.execute()
+        if (_cmd := self._interpret_as_ssd_command(args)) is not None:
+            self._run_ssd_cmd(_cmd)
             return
-        except ValueError:
-            pass
 
-        try:
-            script_path = self._script_manager.find(args)
-        except FileNotFoundError:
+        if (_script_path := self._interpret_as_script(args)) is None:
             self.logger.print("INVALID COMMAND")
             return
 
+        self._run_script(_script_path)
+
+    def _interpret_as_ssd_command(self, args: str) -> IShellCommand | None:
+        try:
+            return self._cmd_factory.parse(args)
+        except ValueError:
+            return None
+
+    def _run_ssd_cmd(self, ssd_cmd: IShellCommand):
+        try:
+            ssd_cmd.execute()
+        except Exception as e:
+            self.logger.print(e)
+
+    def _interpret_as_script(self, args: str) -> Path | None:
+        try:
+            return self._script_manager.find(args)
+        except FileNotFoundError:
+            return None
+
+    def _run_script(self, script_path: Path):
         try:
             ret = self._script_manager.execute(script_path)
             self.logger.print("Pass" if ret else "Fail")

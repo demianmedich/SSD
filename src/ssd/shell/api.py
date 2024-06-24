@@ -110,7 +110,7 @@ class Shell:
             result.append(self.read(lba))
         return result
 
-    def testapp1(self):
+    def testapp1(self):  # TODO: remove this
         test_value = "0xAAAAAAAA"
         self.fullwrite(test_value)
         data = self.fullread()
@@ -120,7 +120,7 @@ class Shell:
                 return
         self.logger.print("Success")
 
-    def testapp2(self):
+    def testapp2(self):  # TODO: remove this
         test_value1 = "0xAAAABBBB"
         test_value2 = "0x12345678"
         for _ in range(30):
