@@ -163,7 +163,6 @@ class CommandBuffer:
                         )
 
                     if self._extract_opcode_from_cmd(commands[i]) == "W":
-                        # del
                         for _ in self._split_erase_commands(
                             commands[i], commands.pop(j)
                         ):
