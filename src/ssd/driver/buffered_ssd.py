@@ -94,8 +94,8 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
     def _extract_data_from_cmd(self, command):
         return int(command.split()[2], 16)
 
-    def _extract_opcode_from_cmd(self, commands):
-        return commands.split()[0]
+    def _extract_opcode_from_cmd(self, command):
+        return command.split()[0]
 
     def _merge_write_cmd(self, later_cmd, older_cmd):
         older_addr = self._extract_addr_from_cmd(older_cmd)
