@@ -124,6 +124,9 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
             if new_size <= 10:
                 later_cmd = None
                 older_cmd = f"E {new_addr} {new_size}"
+            else:
+                older_cmd = f"E {new_addr} 10"
+                later_cmd = f"E {new_addr+10} {new_size-10}"
 
         return later_cmd, older_cmd
 
@@ -174,6 +177,8 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
                     if _ is None:
                         commands.pop(later_idx)
                         break
+                    else:
+                        commands[later_idx] = _
 
                 if older_opcode == "E" and later_opcode == "W":
                     commands[later_idx], _ = self._split_erase_cmd(

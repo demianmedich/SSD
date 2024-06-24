@@ -107,6 +107,26 @@ class BufferedSSDTestCase(unittest.TestCase):
             self.assertEqual(expected, self.read_from_buffer_file(tmpdir))
             self.assert_all_nand_data_zero(tmpdir)
 
+    def test_merge_erase_over_size(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            ssd = CommandBufferedSSD(
+                ErasableVirtualSSD(VirtualSSD(rootdir=tmpdir)), rootdir=tmpdir
+            )
+
+            erase_addr = 0
+            size = 5
+            ssd.erase(erase_addr, size)
+
+            erase_addr = 5
+            size = 7
+            ssd.erase(erase_addr, size)
+
+            expected = ["E 0 10", "E 10 2", ""]
+
+            self.assertEqual(expected, self.read_from_buffer_file(tmpdir))
+            self.assert_all_nand_data_zero(tmpdir)
+
     def test_erase(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
