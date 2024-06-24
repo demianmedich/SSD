@@ -9,6 +9,10 @@ import cmd
 import os
 from pathlib import Path
 
+from ssd.driver.base import SSDInterface
+from ssd.driver.buffered_ssd import CommandBufferedSSD
+from ssd.driver.erasable_ssd import ErasableSSDInterface, ErasableVirtualSSD
+from ssd.driver.virtual import VirtualSSD
 from ssd.shell.api import ResultReader, Shell
 from ssd.shell.app.script_manager import ScriptManager
 from ssd.util.logger import Logger
@@ -79,7 +83,16 @@ class SsdTestShellApp(cmd.Cmd):
             self.ssd_ctrl.help()
 
     def do_flush(self, args):
-        self.logger.print("추가 필요 해요")  # TODO
+        ssd = CommandBufferedSSD(
+            ErasableVirtualSSD(
+                VirtualSSD(
+                    rootdir=Path(Logger.find_git_root()).joinpath("src/ssd/shell/app")
+                )
+            ),
+            rootdir=Path(Logger.find_git_root()).joinpath("src/ssd/shell/app"),
+        )
+
+        ssd.flush()
 
     def default(self, args: str):
         try:
