@@ -94,7 +94,7 @@ class CommandBuffer:
 
         return later_cmd, older_cmd
 
-    def _merge_erase_commands(self, later_cmd, older_cmd):
+    def _merge_erase_cmds(self, later_cmd, older_cmd):
         older_addr = self._extract_addr_from_cmd(older_cmd)
         older_size = self._extract_size_from_cmd(older_cmd)
         later_addr = self._extract_addr_from_cmd(later_cmd)
@@ -110,7 +110,7 @@ class CommandBuffer:
 
         return later_cmd, older_cmd
 
-    def _split_erase_commands(self, later_cmd, older_cmd):
+    def _split_erase_cmds(self, later_cmd, older_cmd):
         older_addr = self._extract_addr_from_cmd(older_cmd)
         older_size = self._extract_size_from_cmd(older_cmd)
         later_addr = self._extract_addr_from_cmd(later_cmd)
@@ -127,16 +127,6 @@ class CommandBuffer:
                 cmds.append(f"E {older_addr} {j}")
                 cmds.append(f"E {later_addr + 1} {older_size - j - 1}")
 
-            # i = 0
-            # for j in range(i + 1, len(cand)):
-            #     if cand[j] - cand[j - 1] > 1:
-            #         size = cand[j - 1] - cand[i] + 1
-            #         cmds.append(f"E {cand[i]} {size}")
-            #         i = j
-            #
-            # # last one
-            # size = cand[-1] - cand[i] + 1
-            # cmds.append(f"E {cand[i]} {size}")
         else:
             cmds.append(older_cmd)
 
@@ -152,21 +142,22 @@ class CommandBuffer:
             while j < i:
                 # i is later, j is older
                 if self._extract_opcode_from_cmd(commands[j]) == "W":
-                    commands[i], commands[j] = self._merge_write_cmd(
-                        commands[i], commands[j]
+                    commands[i], older_cmd = self._merge_write_cmd(
+                        commands[i], commands.pop(j)
                     )
+                    if older_cmd:
+                        commands.insert(j, older_cmd)
 
                 if self._extract_opcode_from_cmd(commands[j]) == "E":
                     if self._extract_opcode_from_cmd(commands[i]) == "E":
-                        commands[i], commands[j] = self._merge_erase_commands(
-                            commands[i], commands[j]
+                        later_cmd, commands[j] = self._merge_erase_cmds(
+                            commands.pop(i), commands[j]
                         )
+                        if later_cmd:
+                            commands.insert(i, later_cmd)
 
-                    if self._extract_opcode_from_cmd(commands[i]) == "W":
-                        # del
-                        for _ in self._split_erase_commands(
-                            commands[i], commands.pop(j)
-                        ):
+                    elif self._extract_opcode_from_cmd(commands[i]) == "W":
+                        for _ in self._split_erase_cmds(commands[i], commands.pop(j)):
                             commands.insert(j, _)
 
                 j += 1
