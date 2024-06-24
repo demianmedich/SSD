@@ -81,6 +81,19 @@ class CommandBuffer:
     def _extract_opcode_from_cmd(self, commands):
         return commands.split()[0]
 
+    def _merge_write_cmd(self, later_cmd, older_cmd):
+        older_addr = self._extract_addr_from_cmd(older_cmd)
+        later_addr = self._extract_addr_from_cmd(later_cmd)
+        if self._extract_opcode_from_cmd(later_cmd) != "E":
+            later_size = self._extract_size_from_cmd(later_cmd)
+        else:
+            later_size = 1
+
+        if later_addr <= older_addr < later_addr + later_size:
+            return later_cmd, None
+
+        return later_cmd, older_cmd
+
     def _merge_erase_commands(self, later_cmd, older_cmd):
         older_addr = self._extract_addr_from_cmd(older_cmd)
         older_size = self._extract_size_from_cmd(older_cmd)
@@ -127,21 +140,14 @@ class CommandBuffer:
     def _optimize_commands(self, commands: list[str]):
         i = len(commands) - 1
         while i < len(commands):
+            ref_commands = commands.copy()
             j = 0
             while j < i:
-                # j is older, i is later
+                # i is later, j is older
                 if self._extract_opcode_from_cmd(commands[j]) == "W":
-                    o_addr = self._extract_addr_from_cmd(commands[j])
-
-                    l_addr = self._extract_addr_from_cmd(commands[i])
-                    if self._extract_opcode_from_cmd(commands[i]) == "E":
-                        l_size = self._extract_size_from_cmd(commands[i])
-                    else:
-                        l_size = 1
-
-                    if l_addr <= o_addr < l_addr + l_size:
-                        del commands[j]
-                        i = 0
+                    commands[i], commands[j] = self._merge_write_cmd(
+                        commands[i], commands[j]
+                    )
 
                 if self._extract_opcode_from_cmd(commands[j]) == "E":
                     if self._extract_opcode_from_cmd(commands[i]) == "E":
@@ -154,5 +160,6 @@ class CommandBuffer:
                             commands.insert(j, _)
 
                 j += 1
-            i += 1
+
+            i = i + 1 if ref_commands == commands else 1
         return commands
