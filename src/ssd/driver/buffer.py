@@ -84,11 +84,11 @@ class CommandBuffer:
     def _merge_write_cmd(self, later_cmd, older_cmd):
         older_addr = self._extract_addr_from_cmd(older_cmd)
         later_addr = self._extract_addr_from_cmd(later_cmd)
-        later_size = (
-            1
-            if self._extract_opcode_from_cmd(later_cmd) != "E"
-            else self._extract_size_from_cmd(later_cmd)
-        )
+        if self._extract_opcode_from_cmd(later_cmd) != "E":
+            later_size = self._extract_size_from_cmd(later_cmd)
+        else:
+            later_size = 1
+
         if later_addr <= older_addr < later_addr + later_size:
             return later_cmd, None
 
