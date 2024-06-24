@@ -153,5 +153,6 @@ class CommandBuffer:
                         for _ in self._split_erase_commands(commands[i], commands[j]):
                             commands.insert(j, _)
 
+                j += 1
             i += 1
         return commands
