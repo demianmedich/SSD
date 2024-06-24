@@ -69,12 +69,6 @@ class CommandBuffer:
         with open(self._buffer_txt_path, mode="w", encoding="utf-8", newline="\n"):
             pass
 
-    def _extract_erase_addr_size(self, command):
-        opcode = command.split()[0]
-        addr = int(command.split()[1])
-        size = int(command.split()[2])
-        return opcode, addr, size
-
     def _extract_addr_from_cmd(self, command):
         return int(command.split()[1])
 
@@ -86,12 +80,6 @@ class CommandBuffer:
 
     def _extract_opcode_from_cmd(self, commands):
         return commands.split()[0]
-
-    def _extract_write_addr_size(self, command):
-        opcode = command.split()[0]
-        addr = int(command.split()[1])
-        data = int(command.split()[2], 16)
-        return opcode, addr, data
 
     def _merge_erase_commands(self, cmd1, cmd2):
         addr1, size1 = (int(_) for _ in cmd1.split()[1:])
