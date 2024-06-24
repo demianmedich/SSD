@@ -26,7 +26,7 @@ class Logger:
     def create_latest_logfile(self, log_file_path):
         try:
             with open(log_file_path, "w") as f:
-                f.write("Initial content if needed")
+                f.write("Initial content if needed\n")
             print(f"Created log file: {log_file_path}")
         except IOError as e:
             print(f"Failed to create log file: {e}")
@@ -95,8 +95,8 @@ def qqq_q():
     logger1 = Logger()
     logger2 = Logger()
 
-    logger1.print("Logger 1 is logging.")
-    logger2.print("Logger 2 is logging.")
+    print(logger1)
+    print(logger2)
 
 
 if __name__ == "__main__":
