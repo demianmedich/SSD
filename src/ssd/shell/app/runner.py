@@ -1,12 +1,6 @@
-"""
-TODO:
-    모든 검증 스크립트는 성공 실패 여부를 리턴해야 한다.
-    그 검증 스크립트는 Shell에서도 실행할 수 있어야 한다.
-"""
-
 from pathlib import Path
 
-from shell.app.util import ScriptManager
+from ssd.shell.app.script_manager import ScriptManager
 from ssd.util.logger import Logger
 
 
