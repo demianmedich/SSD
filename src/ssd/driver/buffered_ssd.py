@@ -135,9 +135,6 @@ class CommandBufferedSSD(CommandBufferedSSDInterface):
         if not (older_addr <= later_addr < older_addr + older_size):
             return later_cmd, None
 
-        # if older_size == 1:
-        #     return later_cmd, None
-
         split_cmds = []
         j = list(range(older_addr, older_addr + older_size)).index(later_addr)
         if j == 0:
