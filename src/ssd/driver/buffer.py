@@ -120,7 +120,7 @@ class CommandBuffer:
         if older_addr <= later_addr < older_addr + older_size:
             j = list(range(older_addr, older_addr + older_size)).index(later_addr)
             if j == 0:
-                cmds.append(f"E {later_addr} {older_size - 1}")
+                cmds.append(f"E {older_addr + 1} {older_size - 1}")
             elif j == older_size:
                 cmds.append(f"E {older_addr} {older_size - 1}")
             else:
@@ -147,6 +147,8 @@ class CommandBuffer:
                     )
                     if older_cmd:
                         commands.insert(j, older_cmd)
+                    else:
+                        break
 
                 if self._extract_opcode_from_cmd(commands[j]) == "E":
                     if self._extract_opcode_from_cmd(commands[i]) == "E":
@@ -155,6 +157,8 @@ class CommandBuffer:
                         )
                         if later_cmd:
                             commands.insert(i, later_cmd)
+                        else:
+                            break
 
                     elif self._extract_opcode_from_cmd(commands[i]) == "W":
                         for _ in self._split_erase_cmds(commands[i], commands.pop(j)):
