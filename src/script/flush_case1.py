@@ -23,7 +23,7 @@ data = api.read(lba)
 if data != test_value:
     sys.exit(1)
 
-lba = 11
+lba = 20
 test_value = "0x12312312"
 for i in range(20, 25):
     api.write(i, test_value)
