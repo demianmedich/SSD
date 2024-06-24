@@ -30,6 +30,11 @@ class SsdTestShellApp(cmd.Cmd):
         return True
 
     def do_help(self, args):
+        """
+        Notice
+        `help` 입력 시 self.default()로 가지 않고 super.do_help()가 실행되기에
+        별도로 HelpCommand 만들지 않고 override 했습니다.
+        """
         self.ssd_ctrl.help()
 
     def default(self, args: str):
