@@ -112,13 +112,13 @@ class CommandBuffer:
 
     def _split_erase_commands(self, later_cmd, older_cmd):
         older_addr = self._extract_addr_from_cmd(older_cmd)
+        older_size = self._extract_size_from_cmd(older_cmd)
         later_addr = self._extract_addr_from_cmd(later_cmd)
-        later_size = self._extract_size_from_cmd(later_cmd)
 
         cmds = []
-        if later_addr <= older_addr < later_addr + later_size:
-            cand = list(range(later_addr, later_addr + later_size))
-            cand.remove(older_addr)
+        if older_addr <= later_addr < older_addr + older_size:
+            cand = list(range(older_addr, older_addr + older_size))
+            cand.remove(later_addr)
 
             i = 0
             for j in range(i + 1, len(cand)):
